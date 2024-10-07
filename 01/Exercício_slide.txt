@@ -1,0 +1,8 @@
+Classwork: you are given 2 datasets. One is generated
+with a fair coin and another is generated with a biased coin
+with probability p = 0.30 for obtained heads,
+Guess the head that your partner used
+Explain your answer
+◦ If you know that the probability of using a biased coin is
+1/3 does your answer changes?
+◦ What happens if N increases?
