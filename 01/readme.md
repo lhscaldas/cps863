@@ -1,6 +1,6 @@
 # Análise de Lançamentos de Moeda
 
-Este documento descreve a análise de dados de lançamentos de moeda para determinar se os dados foram gerados por uma moeda justa (p = 0.5) ou uma moeda viciada (p = 0.30 para caras). A seguir, apresentamos a explicação do que está sendo feito no código e algumas simulações com diferentes valores de N.
+Este trabalho descreve a análise de dados de lançamentos de moeda para determinar se os dados foram gerados por uma moeda justa (p = 0.5) ou uma moeda viciada (p = 0.30 para caras). A seguir, apresentamos a explicação do que está sendo feito no código e algumas simulações com diferentes valores de N.
 
 ## Explicação do Código
 
