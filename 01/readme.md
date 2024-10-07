@@ -69,45 +69,84 @@ Nesta simulação, geramos 10 lançamentos de moeda e calculamos as probabilidad
 
 #### p = 0.3 (moeda viciada)
 [0, 0, 0, 0, 1, 0, 0, 1, 0, 0]
+
 Probabilidade posterior de moeda justa: 0.27
+
 Probabilidade posterior de moeda viciada: 0.73
+
 Os dados são mais provavelmente gerados por uma moeda viciada.
+
 [0, 0, 0, 0, 0, 1, 0, 1, 1, 0]
+
 Probabilidade posterior de moeda justa: 0.47
+
 Probabilidade posterior de moeda viciada: 0.53
+
 Os dados são mais provavelmente gerados por uma moeda viciada.
+
 [0, 1, 0, 0, 0, 0, 0, 0, 1, 1]
+
 Probabilidade posterior de moeda justa: 0.47
+
 Probabilidade posterior de moeda viciada: 0.53
+
 Os dados são mais provavelmente gerados por uma moeda viciada.
+
 [1, 1, 0, 1, 1, 0, 0, 0, 0, 0]
+
 Probabilidade posterior de moeda justa: 0.67
+
 Probabilidade posterior de moeda viciada: 0.33
+
 Os dados são mais provavelmente gerados por uma moeda justa.
+
 [0, 0, 0, 0, 0, 0, 0, 1, 1, 0]
+
 Probabilidade posterior de moeda justa: 0.27
+
 Probabilidade posterior de moeda viciada: 0.73
+
 Os dados são mais provavelmente gerados por uma moeda viciada.
+
 #### p = 0.5 (moeda justa)
 [0, 1, 1, 0, 0, 1, 1, 0, 0, 0]
+
 Probabilidade posterior de moeda justa: 0.67
+
 Probabilidade posterior de moeda viciada: 0.33
+
 Os dados são mais provavelmente gerados por uma moeda justa.
+
 [1, 0, 0, 1, 1, 0, 1, 1, 0, 1]
+
 Probabilidade posterior de moeda justa: 0.92
+
 Probabilidade posterior de moeda viciada: 0.08
+
 Os dados são mais provavelmente gerados por uma moeda justa.
+
 [0, 1, 1, 1, 0, 1, 0, 0, 1, 0]
+
 Probabilidade posterior de moeda justa: 0.83
+
 Probabilidade posterior de moeda viciada: 0.17
+
 Os dados são mais provavelmente gerados por uma moeda justa.
+
 [0, 0, 0, 0, 0, 0, 0, 0, 1, 1]
+
 Probabilidade posterior de moeda justa: 0.27
+
 Probabilidade posterior de moeda viciada: 0.73
+
 Os dados são mais provavelmente gerados por uma moeda viciada.
+
 [0, 1, 1, 0, 0, 1, 1, 1, 1, 1]
+
 Probabilidade posterior de moeda justa: 0.96
+
 Probabilidade posterior de moeda viciada: 0.04
+
 Os dados são mais provavelmente gerados por uma moeda justa.
 
 ### Simulação com N = 50
@@ -116,45 +155,83 @@ Nesta simulação, geramos 50 lançamentos de moeda e calculamos as probabilidad
 
 #### p = 0.3 (moeda viciada)
 [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
 Probabilidade posterior de moeda justa: 0.00
+
 Probabilidade posterior de moeda viciada: 1.00
+
 Os dados são mais provavelmente gerados por uma moeda viciada.
+
 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
+
 Probabilidade posterior de moeda justa: 0.01
+
 Probabilidade posterior de moeda viciada: 0.99
+
 Os dados são mais provavelmente gerados por uma moeda viciada.
+
 [0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1]
+
 Probabilidade posterior de moeda justa: 0.07
+
 Probabilidade posterior de moeda viciada: 0.93
+
 Os dados são mais provavelmente gerados por uma moeda viciada.
+
 [0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+
 Probabilidade posterior de moeda justa: 0.00
+
 Probabilidade posterior de moeda viciada: 1.00
+
 Os dados são mais provavelmente gerados por uma moeda viciada.
+
 [1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1]
+
 Probabilidade posterior de moeda justa: 0.07
+
 Probabilidade posterior de moeda viciada: 0.93
+
 Os dados são mais provavelmente gerados por uma moeda viciada.
 #### p = 0.5 (moeda justa)
 [0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0]
+
 Probabilidade posterior de moeda justa: 1.00
+
 Probabilidade posterior de moeda viciada: 0.00
+
 Os dados são mais provavelmente gerados por uma moeda justa.
+
 [0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 0]
+
 Probabilidade posterior de moeda justa: 1.00
+
 Probabilidade posterior de moeda viciada: 0.00
+
 Os dados são mais provavelmente gerados por uma moeda justa.
+
 [1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1]
+
 Probabilidade posterior de moeda justa: 1.00
+
 Probabilidade posterior de moeda viciada: 0.00
+
 Os dados são mais provavelmente gerados por uma moeda justa.
+
 [0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1]
+
 Probabilidade posterior de moeda justa: 1.00
+
 Probabilidade posterior de moeda viciada: 0.00
+
 Os dados são mais provavelmente gerados por uma moeda justa.
+
 [0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0]
+
 Probabilidade posterior de moeda justa: 1.00
+
 Probabilidade posterior de moeda viciada: 0.00
+
 Os dados são mais provavelmente gerados por uma moeda justa.
 
 
@@ -164,48 +241,85 @@ Nesta simulação, geramos 100 lançamentos de moeda e calculamos as probabilida
 
 #### p = 0.3 (moeda viciada)
 [1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
 Probabilidade posterior de moeda justa: 0.00
+
 Probabilidade posterior de moeda viciada: 1.00
+
 Os dados são mais provavelmente gerados por uma moeda viciada.
+
 [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1]
+
 Probabilidade posterior de moeda justa: 0.00
+
 Probabilidade posterior de moeda viciada: 1.00
+
 Os dados são mais provavelmente gerados por uma moeda viciada.
+
 [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0]
+
 Probabilidade posterior de moeda justa: 0.17
+
 Probabilidade posterior de moeda viciada: 0.83
+
 Os dados são mais provavelmente gerados por uma moeda viciada.
+
 [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1]
+
 Probabilidade posterior de moeda justa: 0.02
+
 Probabilidade posterior de moeda viciada: 0.98
+
 Os dados são mais provavelmente gerados por uma moeda viciada.
+
 [0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1]
+
 Probabilidade posterior de moeda justa: 0.00
+
 Probabilidade posterior de moeda viciada: 1.00
+
 Os dados são mais provavelmente gerados por uma moeda viciada.
 
 #### p = 0.5 (moeda justa)
 [0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1]
+
 Probabilidade posterior de moeda justa: 1.00
+
 Probabilidade posterior de moeda viciada: 0.00
-Os dados são mais provavelmente gerados por uma moeda justa.
-[0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1]
-Probabilidade posterior de moeda justa: 0.93
-Probabilidade posterior de moeda viciada: 0.07
-Os dados são mais provavelmente gerados por uma moeda justa.
-[1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1]
-Probabilidade posterior de moeda justa: 1.00
-Probabilidade posterior de moeda viciada: 0.00
-Os dados são mais provavelmente gerados por uma moeda justa.
-[1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0]
-Probabilidade posterior de moeda justa: 1.00
-Probabilidade posterior de moeda viciada: 0.00
-Os dados são mais provavelmente gerados por uma moeda justa.
-[1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0]
-Probabilidade posterior de moeda justa: 0.52
-Probabilidade posterior de moeda viciada: 0.48
+
 Os dados são mais provavelmente gerados por uma moeda justa.
 
+[0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1]
+
+Probabilidade posterior de moeda justa: 0.93
+
+Probabilidade posterior de moeda viciada: 0.07
+
+Os dados são mais provavelmente gerados por uma moeda justa.
+
+[1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1]
+
+Probabilidade posterior de moeda justa: 1.00
+
+Probabilidade posterior de moeda viciada: 0.00
+
+Os dados são mais provavelmente gerados por uma moeda justa.
+
+[1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0]
+
+Probabilidade posterior de moeda justa: 1.00
+
+Probabilidade posterior de moeda viciada: 0.00
+
+Os dados são mais provavelmente gerados por uma moeda justa.
+
+[1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0]
+
+Probabilidade posterior de moeda justa: 0.52
+
+Probabilidade posterior de moeda viciada: 0.48
+
+Os dados são mais provavelmente gerados por uma moeda justa.
 
 ## Conclusão
 
