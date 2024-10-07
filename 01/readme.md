@@ -5,18 +5,61 @@ Este documento descreve a análise de dados de lançamentos de moeda para determ
 ## Explicação do Código
 
 1. **Geração de Dados de Moeda Viciada:**
+```python
+import random
+
+def generate_biased_coin_data(N, p=0.3):
+    return [1 if random.random() < p else 0 for _ in range(N)]
+```
    - Gera uma lista de N lançamentos de moeda onde cada lançamento tem uma probabilidade `p` de ser cara (representado por 1) e `1-p` de ser coroa (representado por 0).
 
 2. **Cálculo da Verossimilhança:**
+```python
+def likelihood(data, p):
+    heads = sum(data)
+    tails = len(data) - heads
+    return (p ** heads) * ((1 - p) ** tails)
+```
    - Calcula a verossimilhança dos dados observados dado uma probabilidade `p`.
 
 3. **Inferência Bayesiana:**
+```python
+def bayesian_inference(data, prior_fair=2/3, prior_biased=1/3):
+    likelihood_fair = likelihood(data, 0.5)
+    likelihood_biased = likelihood(data, 0.3)
+    
+    posterior_fair = likelihood_fair * prior_fair
+    posterior_biased = likelihood_biased * prior_biased
+    
+    normalization_constant = posterior_fair + posterior_biased
+    
+    posterior_fair /= normalization_constant
+    posterior_biased /= normalization_constant
+    
+    return posterior_fair, posterior_biased
+``` 
    - Utiliza o teorema de Bayes para atualizar as probabilidades a priori com base nos dados observados e calcular as probabilidades posteriores.
 
 4. **Simulação:**
+```python
+N = 10  # Número de lançamentos de moeda
+for _ in range(5):
+    data = generate_biased_coin_data(N, p=0.3)
+    print(data)
+    posterior_fair, posterior_biased = bayesian_inference(data)
+
+    print(f"Probabilidade posterior de moeda justa: {posterior_fair:.2f}")
+    print(f"Probabilidade posterior de moeda viciada: {posterior_biased:.2f}")
+
+    if posterior_fair > posterior_biased:
+        print("Os dados são mais provavelmente gerados por uma moeda justa.")
+    else:
+        print("Os dados são mais provavelmente gerados por uma moeda viciada.")
+```
    - Gera N lançamentos de moeda com uma probabilidade `p` para caras.
    - Calcula as probabilidades posteriores de os dados serem gerados por uma moeda justa ou viciada.
    - Compara as probabilidades posteriores para determinar qual hipótese é mais provável.
+   - O loop é rodado 5 vezes para ver melhor como a inferência se comporta com a aleatoriedade.
 
 ## Simulações com Diferentes Valores de N e p
 
