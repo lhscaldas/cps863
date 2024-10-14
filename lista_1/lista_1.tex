@@ -18,6 +18,7 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{hyperref}
+\usepackage{tcolorbox}
 \newcommand\redout{\bgroup\markoverwith
 {\textcolor{red}{\rule[0.5ex]{2pt}{0.8pt}}}\ULon}
 \renewcommand{\lstlistingname}{Código}% Listing -> Algorithm
@@ -51,18 +52,17 @@
 \title{%
 \textbf{\huge Universidade Federal do Rio de Janeiro} \par
 \textbf{\LARGE Instituto Alberto Luiz Coimbra de Pós-Graduação e Pesquisa de Engenharia} \par
+
 \includegraphics[width=8cm]{COPPE UFRJ.png} \par
+
 \textbf{Programa de Engenharia de Sistemas e Computação} \par
-\large
-CPS769 - Introdução à Inteligência Artificial e Aprendizagem Generativa \newline \par
-\small
-Prof. Dr. Edmundo de Souza e Silva (PESC/COPPE/UFRJ)\par 
-Profa. Dra. Rosa M. Leão (PESC/COPPE/UFRJ)\par 
-Participação Especial: Gaspare Bruno (Diretor Inovação, ANLIX) \par
+
+CPS863 - Aprendizado de Máquina  \par
+
+Prof. Dr. Edmundo de Souza e Silva (PESC/COPPE/UFRJ)\par
 
 \vspace{1\baselineskip}
-\Large
-\textbf{\textit{Lista de Exercícios 2
+\textbf{\textit{Classificação de embarcações utilizando técnicas de Visão Computacional
 }}
 }
 
@@ -73,194 +73,362 @@ Participação Especial: Gaspare Bruno (Diretor Inovação, ANLIX) \par
 \begin{document}
 \maketitle
 
+
 \section*{Questão 1}
 
-O objetivo deste trabalho é entender como construir um modelo preditivo simples (de Redes Neurais) usando uma ou mais camadas ocultas, e se familiarizar com os códigos em Python. Nesta tarefa, você deverá construir um modelo de rede neural simples para prever a nota de cada aluno em uma turma com base em duas features:
+Este exercício foi feito em classe no dia 10/Out/2024. A lista contém as questões resolvidas e ainda
+alguns itens a mais. Faça a lista e complete as questões que faltaram.
+
+Este exercício é motivado pelo trabalho em \url{https://ieeexplore.ieee.org/document/9006548},
+Seção H (Leveraging spatio-temporal correlation across homes). O problema foi simplificado neste
+exercício.
+
+Imagine que dispomos de um classificador implementado em roteadores residenciais de um provedor
+de Internet (ISP). A cada janela de tempo (por exemplo a cada 5 minutos) o classificador do roteador
+$i$ fornece como saída uma dentre 2 possibilidades: (a) existe um ataque DDoS acontecendo a partir da
+residência do roteador $i$, nesta janela de tempo; (b) não há ataque acontecendo a partir da residência
+do roteador $i$ nesta janela.
+
+A cada 5 minutos o ISP amostra o resultado de $M$ roteadores escolhidos de forma aleatória dentre
+todos os roteadores da sua base que, para todos os efeitos deste problema, pode ser considerada como
+muito grande (infinita). O objetivo do ISP é determinar, a partir das $M$ amostras coletadas, se
+um ataque aconteceu ou não durante a janela de tempo amostrada. Em outras palavras, o ISP quer
+determinar a possibilidade de uma das seguintes hipóteses serem verdadeiras: $h_a$ (há um ataque DDoS
+acontecendo na rede do ISP na janela amostrada) ou $h_b$ que é a hipótese complementar.
+
+O ISP conhece o classificador usado em cada roteador residencial, e sabe que o resultado não é
+100\% confiável. Portanto, ele usará correlação espacial conforme sugerido no artigo acima e explicado
+em classe.
+
+No que se segue usaremos algumas definições comuns que podem ser encontradas em
+\url{https://en.wikipedia.org/wiki/Confusion_matrix} (ver também a figura em \url{https://en.wikipedia.org/wiki/Confusion_matrix}).
+
+\subsection*{Notação:}
 
 \begin{itemize}
-    \item Fração de palestras assistidas
-    \item Número de horas estudadas por semana (até o máximo de 8 horas em uma semana).
+    \item $M$: número de roteadores amostrados (em uma janela de tempo);
+    \item Inf: variável aleatória (va) indicando se a residência é um “bot”, isto é, está ou não infectada.
+    $P[\text{Inf}]$ ($P[\overline{\text{Inf}}]$) é a probabilidade de uma residência estar infectada (não estar infectada);
+    \item TPR: (true positive rate ou hit rate) taxa de acerto do classificador, ou probabilidade do classificador corretamente sinalizar um ataque, dado que um ataque está acontecendo no ISP (Nota: obviamente somente residências infectadas podem gerar um ataque quando ele ocorre);
+    \item FPR: (false positive rate) ou probabilidade do classificador do roteador residencial erradamente sinalizar um ataque a partir da residência;
+    \item $L$: variável aleatória indicadora $L = 1$ se o roteador alarma, $L = 0$, caso contrário;
+    \item $P[h_a]$: probabilidade de ocorrer um ataque DDoS no ISP em uma janela de tempo. (Se você tem algum conhecimento prévio sobre ataques, talvez possa estimar o $P[h_a]$).
 \end{itemize}
 
-Sobre a Rede Neural e programa:
+Suponha que, em uma determinada janela de tempo, das $M$ amostras coletadas, $V$ roteadores
+sinalizaram que um ataque estava ocorrendo na janela (e então $M - V$ roteadores sinalizaram que
+tudo estava normal nas suas respectivas residências). Suponha ainda que um ataque ocorre em um
+intervalo independentemente das infecções nas residências.
 
-\begin{itemize}
-    \item A sua rede neural deverá ter uma camada oculta com 3 neurônios. Portanto teremos 2 entradas (as 2 features), uma camada oculta e, na camada de saída, um neurônio.
-    \item Os dados de entrada são fornecidos em uma planilha .ods (libreoffice), com os dados de 500 estudantes.
-    \item Uma vez lido, o seu dataset deve ser aleatoriamente dividido de forma a que 80\% seja para treino do modelo e os restantes 20\% para teste.
-    \item No seu programa:
-    \begin{itemize}
-        \item Use um Scaler padrão do sklearn para dimensionar os dados de treinamento. Explique o motivo de escalonar os dados de entrada.
-        
-        \textbf{Explicação:} \par
+Para os seus cálculos, suponha que: TPR = 0.8, FPR = 0.1, $P[\text{Inf}] = 0.2$. Como você
+não tem conhecimento prévio sobre $P[h_a]$, suponha inicialmente que $P[h_a] = P[h_b] = 0.5$, $V = 20$, $M = 200$.
 
-        Escalonar os dados de entrada normaliza suas distribuições, levando a média para zero e o desvio padrão para o valor unitário, permitindo uma convergência mais rápida e estável do modelo de machine learning, pois o modelo não precisa lidar com features de ordem de grandeza diferentes.
-
-        \item Para a camada oculta, use a função de ativação ReLU (Rectified Linear Unit).
-        \item A camada de saída usa a ativação linear padrão (explique o que é).
-        
-        \textbf{Explicação:} \par
-
-        A ativação linear padrão retorna a entrada sem modificações ($f(x)=x$), usada em problemas de regressão para prever valores contínuos.
-
-        \item Use o algoritmo de otimização Adam (Adaptive Moment Estimation). Explique bem resumidamente as vantagens em relação ao Stochastic Gradient Descent padrão.
-        
-        \textbf{Explicação:} \par
-
-        Adam ajusta a taxa de aprendizagem para cada parâmetro individualmente e utiliza momentos dos gradientes, permitindo convergência mais rápida e estável.
-
-        \item Use mean square error para a função de perda. Explique bem resumidamente o objetivo da função de perda.
-          
-        \textbf{Explicação:} \par
-
-        A função de perda mede a diferença entre as previsões do modelo e os valores reais. Durante o aprendizado, o ajuste dos pesos é feito de forma a minimizar o valor da função de perda, melhorando a acurácia do modelo.
-
-    \end{itemize}
-\end{itemize}
-
-Responda:
+\vspace{1\baselineskip}
+Responda as seguintes perguntas, mas só substitua os valores no final:
 
 \begin{enumerate}
-    \item Como o modelo de rede neural está estruturado? Explique a arquitetura.
+    \item Suponha que um ataque esteja ocorrendo. Calcule $P[L = 1|\text{Inf}, h_a]$ e $P[L = 1|\overline{\text{Inf}}, h_a]$, e então $P[L = 1|h_a]$ e $P[L = 0|h_a]$.
     
-    \textbf{Resposta:} \par
+    \begin{tcolorbox}[colback=white, colframe=black, title=Resposta:]
+Se o ataque está ocorrendo, temos:
+$$
+P[L = 1|\text{Inf}, h_a] = TPR = 0.8
+$$
+e
+$$
+P[L = 1|\overline{\text{Inf}}, h_a] = FPR = 0.1
+$$
 
-    O modelo possui duas entradas (as duas features), uma camada oculta com 3 neurônios usando a função de ativação ReLU, e uma camada de saída com um neurônio e ativação linear.
+Podemos calcular \( P[L = 1|h_a] \) pela lei total da probabilidade:
+$$
+P[L = 1|h_a] = P[L = 1|\text{Inf}, h_a] \cdot P[\text{Inf}] + P[L = 1|\overline{\text{Inf}}, h_a] \cdot P[\overline{\text{Inf}}]
+$$
 
-    \item Explique o papel da função de ativação usada na camada oculta.
-   
-    \textbf{Resposta:} \par
+Substituindo os valores:
+$$
+P[L = 1|h_a] = 0.8 \cdot 0.2 + 0.1 \cdot 0.8 = 0.16 + 0.08 = 0.24
+$$
 
-    A função ReLU (Rectified Linear Unit) ajuda a introduzir não-linearidade ao modelo, permitindo que ele aprenda relações complexas entre as entradas e as saídas.
-
-    \item Treine o modelo com o conjunto de dados fornecido. Qual o erro quadrático médio nos dados de teste?
-       
-    \textbf{Resposta:} \par
-
-    O modelo foi treinado por 600 épocas e no conjunto de teste o menor erro médio quadrático obtido foi de \textbf{$307.94$}.
-
-    \item Trace o erro quadrático médio em função das “épocas” (dos passos para a convergência). Descreva a tendência que você observa.
-       
-    \textbf{Resposta:} \par
-
-    \begin{figure}[H]
-        \caption{Eveloução do erro de treinamento ao longo das épocas.}
-           \centering
-           \includegraphics[height=8cm]{fig/item_4.png}
-    \end{figure}
-
-    Pelo gráfico acima, é posssível observar que o erro médio quadrático tende a cair com o aumento das épocas até que esta queda deixa de ser relevante, o que ocorre por volta de 400 épocas.
-
-    \item Mostre os pesos e bias de cada camada após o treinamento, isto é, mostre os parâmetros aprendidos do modelo.
-       
-    \textbf{Resposta:} \par
-
-    \begin{table}[H]
-        \centering
-        \caption{Pesos e Bias das Camadas}
-        \begin{tabular}{|c|c|l|}
-            \hline
-            \textbf{Camada} & \textbf{Tipo} & \textbf{Valores} \\
-            \hline
-            \multirow{2}{*}{1} & Pesos & 2.3686342 | 2.3783615 | 0.71419466 \\
-                               &       & 2.0336158 | -2.3631034 | 1.5801256 \\
-            \hline
-            1 & Bias   & 3.7342753 | 4.462739 | 4.0898366 \\
-            \hline
-            2 & Pesos & 4.112546 | 3.063474 | 4.479588 \\
-            \hline
-            2 & Bias   & 2.6367683 \\
-            \hline
-        \end{tabular}
-    \end{table}
-
-    \item Use o modelo treinado para prever as notas a partir dos dados de novos alunos (com um segundo dataset fornecido sem as notas). Mostre as previsões feitas pelo modelo e explique os resultados.
-       
-    \textbf{Resposta:} \par
-
-    \begin{table}[H]
-        \centering
-        \caption{Resultados da previsão a partir dos dados de novos alunos.}
-        \begin{tabular}{|c|c|c|}
-            \hline
-            \textbf{Presença} & \textbf{HorasEstudo} & \textbf{Nota} \\
-            \hline
-            0.3745401188 & 2.974337759 & 32.95745 \\
-            \hline
-            0.9507143064 & 5.628494665 & 82.800064 \\
-            \hline
-            0.7319939418 & 3.183951849 & 57.951267 \\
-            \hline
-            0.5986584842 & 2.175392597 & 44.790115 \\
-            \hline
-            0.1560186404 & 7.931297538 & 44.161804 \\
-            \hline
-            0.1559945203 & 4.548447399 & 24.69879 \\
-            \hline
-            0.05808361217 & 5.135056409 & 20.509508 \\
-            \hline
-            0.8661761458 & 2.150503628 & 62.7456 \\
-            \hline
-            0.6011150117 & 3.911234551 & 52.116886 \\
-            \hline
-            0.7080725778 & 5.221845179 & 64.74353 \\
-            \hline
-            0.0205844943 & 2.698012845 & 17.904613 \\
-            \hline
-            0.9699098522 & 5.751396037 & 84.60283 \\
-            \hline
-            0.8324426408 & 3.79872262 & 67.26796 \\
-            \hline
-            0.2123391107 & 4.4166125 & 27.958336 \\
-            \hline
-            0.1818249672 & 3.796586776 & 23.457981 \\
-            \hline
-            0.1834045099 & 8.704556369 & 51.34989 \\
-            \hline
-            0.304242243  & 4.973005551 & 36.457355 \\
-            \hline
-            0.5247564316 & 2.884578142 & 42.72716 \\
-            \hline
-            0.4319450186 & 6.645089824 & 51.97556 \\
-            \hline
-            0.2912291402 & 2.5583127   & 27.386648 \\
-            \hline
-        \end{tabular}
-    \end{table}
-
-    \item Modifique o programa para adicionar mais camadas e/ou maior número de neurônios ocultos. Como suas modificações afetam o desempenho do modelo?
+Agora, \( P[L = 0|h_a] \) é simplesmente o complementar de \( P[L = 1|h_a] \):
+$$
+P[L = 0|h_a] = 1 - P[L = 1|h_a] = 1 - 0.24 = 0.76
+$$
     
-       
-    \textbf{Resposta:} \par
+    \end{tcolorbox}
 
-    Foram testados dois novos modelos, um com 3 camadas ocultas com 3 neurônios cada e outro com uma camada oculta com 9 neurônios. 
-
-    Enquanto o modelo original (uma camada oculta com 3 neurônios) obteve um erro médio quadrático de $307.94$, o modelo de 3 camadas de 3 neurônios obteve um erro de $315.00$ e o modelo com uma camada de 9 neurônios obteve um erro de $309.56$.
-
-    Foi testado então um novo modelo com uma camada oculta de 100 neurônios (valor padrão do tensor flow). O erro médio quadrático obtido foi de $312.28$.
-
-    Nenhuma das 3 novas arquiterturas testadas superou o desempenho da arquitetura original, com uma camada oculta de 3 neurônios. 
-
-    \item Quais seriam algumas melhorias potenciais ou recursos adicionais que poderiam ser adicionados ao modelo para melhorar sua precisão preditiva?
+    \item Suponha que um ataque não esteja ocorrendo. Calcule $P[L = 1|\text{Inf}, h_b]$ e $P[L = 1|\overline{\text{Inf}}, h_b]$, e então $P[L = 1|h_b]$ e $P[L = 0|h_b]$.
     
-       
-    \textbf{Resposta:} \par
+    \begin{tcolorbox}[colback=white, colframe=black, title=Resposta:]
 
-    Para melhorar a precisão preditiva, poderia-se adicionar regularização (como Dropout), usar técnicas de aumento de dados, ou experimentar diferentes arquiteturas de rede.
+    Se um ataque não está ocorrendo, temos:
+    $$
+    P[L = 1|\text{Inf}, h_b] = FPR = 0.1
+    $$
+    e
+    $$
+    P[L = 1|\overline{\text{Inf}}, h_b] = FPR = 0.1
+    $$
+    
+    Podemos calcular \( P[L = 1|h_b] \) usando a lei total da probabilidade:
+    $$
+    P[L = 1|h_b] = P[L = 1|\text{Inf}, h_b] \cdot P[\text{Inf}] + P[L = 1|\overline{\text{Inf}}, h_b] \cdot P[\overline{\text{Inf}}]
+    $$
+    
+    Substituindo os valores:
+    $$
+    P[L = 1|h_b] = 0.1 \cdot 0.2 + 0.1 \cdot 0.8 = 0.02 + 0.08 = 0.10
+    $$
+    
+    Agora, \( P[L = 0|h_b] \) é o complementar de \( P[L = 1|h_b] \):
+    $$
+    P[L = 0|h_b] = 1 - P[L = 1|h_b] = 1 - 0.10 = 0.90
+    $$
+    
+\end{tcolorbox}
 
-    \item Faria sentido usar a função de ativação sigmoid no modelo? Explique em poucas palavras.
-       
-    \textbf{Resposta:} \par
+    \item Calcule $P[D|h_a]$ em função de $V$ e $M$ (Likelihood).
+    
+    \begin{tcolorbox}[colback=white, colframe=black, title=Resposta:]
 
-    A função sigmoid é mais adequada para tarefas de classificação binária. Para problemas de regressão, como o apresentado, a ativação linear na saída é mais apropriada.
+Sabemos que \( D \) representa os dados observados, isto é, \( V \) roteadores sinalizando um ataque de um total de \( M \) roteadores.
+
+A probabilidade \( P[D|h_a] \) pode ser modelada como uma distribuição binomial, onde \( V \) roteadores sinalizam um ataque dado que um ataque realmente está ocorrendo (\( h_a \)):
+
+$$
+P[D|h_a] = \binom{M}{V} (P[L = 1|h_a])^V (P[L = 0|h_a])^{M-V}
+$$
+
+Substituindo \( P[L = 1|h_a] = 0.24 \) e \( P[L = 0|h_a] = 0.76 \):
+
+$$
+P[D|h_a] = \binom{M}{V} (0.24)^V (0.76)^{M-V}
+$$
+
+\end{tcolorbox}
+
+    \item Calcule $P[D|h_b]$ em função de $V$ e $M$ (Likelihood).
+    
+    \begin{tcolorbox}[colback=white, colframe=black, title=Resposta:]
+
+De forma similar à Pergunta 3, modelamos \( P[D|h_b] \) como uma distribuição binomial. Agora, \( h_b \) indica que não há ataque acontecendo, e portanto utilizamos \( P[L = 1|h_b] \) e \( P[L = 0|h_b] \):
+
+$$
+P[D|h_b] = \binom{M}{V} (P[L = 1|h_b])^V (P[L = 0|h_b])^{M-V}
+$$
+
+Substituindo \( P[L = 1|h_b] = 0.1 \) e \( P[L = 0|h_b] = 0.9 \):
+
+$$
+P[D|h_b] = \binom{M}{V} (0.1)^V (0.9)^{M-V}
+$$
+
+
+\end{tcolorbox}
+
+    \item Calcule $P[h_a|D]$ e $P[h_b|D]$ (Posterior).
+    
+    \begin{tcolorbox}[colback=white, colframe=black, title=Resposta:]
+
+    Usamos o teorema de Bayes para calcular \( P[h_a|D] \) e \( P[h_b|D] \).
+    
+    Para \( P[h_a|D] \):
+    $$
+    P[h_a|D] = \frac{P[D|h_a] \cdot P[h_a]}{P[D]}
+    $$
+    
+    A probabilidade total \( P[D] \) é dada por:
+    $$
+    P[D] = P[D|h_a] \cdot P[h_a] + P[D|h_b] \cdot P[h_b]
+    $$
+    
+    Substituímos os valores de \( P[D|h_a] \), \( P[D|h_b] \), \( P[h_a] = 0.5 \) e \( P[h_b] = 0.5 \) (hipóteses iguais):
+    $$
+    P[h_a|D] = \frac{P[D|h_a] \cdot 0.5}{P[D|h_a] \cdot 0.5 + P[D|h_b] \cdot 0.5}
+    $$
+    
+    Similarmente, para \( P[h_b|D] \):
+    $$
+    P[h_b|D] = \frac{P[D|h_b] \cdot 0.5}{P[D|h_a] \cdot 0.5 + P[D|h_b] \cdot 0.5}
+    $$
+
+    Substituindo os valores de \( P[D|h_a] \) e \( P[D|h_b] \) calculados anteriormente, podemos encontrar os valores de \( P[h_a|D] \) e \( P[h_b|D] \) em funçào de \( V \) e \( M \):
+
+    $$
+P[h_a|D] = \frac{(0.24)^V (0.76)^{M - V}}{(0.24)^V (0.76)^{M - V} + (0.1)^V (0.9)^{M - V}}
+$$
+
+$$
+P[h_b|D] = \frac{(0.1)^V (0.9)^{M - V}}{(0.24)^V (0.76)^{M - V} + (0.1)^V (0.9)^{M - V}}
+$$
+    
+\end{tcolorbox}
+
+    \item Qual o mínimo de roteadores que deveriam alarmar ($V$) para que você tenha confiança de que um ataque ocorreu.
+    
+    \begin{tcolorbox}[colback=white, colframe=black, title=Resposta:]
+
+    O número mínimo de roteadores \( V \) que devem alarmar para termos confiança de que um ataque está ocorrendo pode ser calculado comparando \( P[h_a|D] \) e \( P[h_b|D] \).
+    
+    Queremos encontrar \( V \) tal que:
+    $$
+    P[h_a|D] > P[h_b|D]
+    $$
+    
+    Para garantir essa desigualdade, substituímos as expressões que encontramos para \( P[h_a|D] \) e \( P[h_b|D] \):
+
+    $$
+    \frac{(0.24)^V (0.76)^{M - V}}{(0.24)^V (0.76)^{M - V} + (0.1)^V (0.9)^{M - V}} > \frac{(0.1)^V (0.9)^{M - V}}{(0.24)^V (0.76)^{M - V} + (0.1)^V (0.9)^{M - V}}
+    $$
+    
+    Como o denominador é o mesmo dos dois lados da desigualdade, temos:
+    
+    $$
+    (0.24)^V (0.76)^{M - V} > (0.1)^V (0.9)^{M - V}
+    $$
+    
+    Rearranjando os termos, obtemos:
+    
+    $$
+    \frac{(0.24)^V}{(0.1)^V} > \frac{(0.9)^{M - V}}{(0.76)^{M - V}}
+    $$
+    
+    Definindo \( k_1 = \frac{0.24}{0.1} = 2.4 \) e \( k_2 = \frac{0.9}{0.76} \):
+    
+    $$
+    (2.4)^V > (k_2)^{M - V}
+    $$
+    
+    Tomando o logaritmo em ambos os lados, temos:
+    
+    $$
+    V \cdot \log(2.4) > (M - V) \cdot \log(k_2)
+    $$
+    
+    Distribuindo, isso se torna:
+    
+    $$
+    V \cdot \log(2.4) + V \cdot \log(k_2) > M \cdot \log(k_2) 
+    $$
+    
+    Rearranjando:
+    
+    $$
+    V \cdot (\log(2.4) + \log(k_2)) > M \cdot \log(k_2)
+    $$
+    
+    Assim, isolando \( V \):
+    
+    $$
+    V > \frac{M \cdot \log(k_2)}{\log(2.4) + \log(k_2)}
+    $$
+    
+    Finalmente, para \( M = 200 \):
+    
+    $$
+    V > 32.37
+    $$
+    
+    Portanto, pelo menos \( 33 \) roteadores devem alarmar para garantir que a probabilidade de um ataque esteja ocorrendo seja maior do que a probabilidade de não estar ocorrendo.
+    
+\end{tcolorbox}
+
+    \item Caso $P[h_a] = 0.1$, os resultados variam? Trace as curvas $P[h_a|D]$ e $P[h_b|D]$ em função de $V$ e explique as curvas.
+    
+    \begin{tcolorbox}[colback=white, colframe=black, title=Resposta:]
+
+Quando alteramos \( P[h_a] \) para 0.1, os cálculos de \( P[h_a|D] \) e \( P[h_b|D] \) são impactados. Isso ocorre porque o valor anterior \( P[h_a] = 0.5 \) era uma suposição de hipóteses equiprováveis.
+
+Com \( P[h_a] = 0.1 \), temos:
+$$
+P[h_a|D] = \frac{P[D|h_a] \cdot 0.1}{P[D|h_a] \cdot 0.1 + P[D|h_b] \cdot 0.9}
+$$
+e
+$$
+P[h_b|D] = \frac{P[D|h_b] \cdot 0.9}{P[D|h_a] \cdot 0.1 + P[D|h_b] \cdot 0.9}
+$$
+
+As curvas de \( P[h_a|D] \) e \( P[h_b|D] \) em função de \( V \) mudam com essa nova probabilidade a priori, sendo necessário recalcular os valores de \( P[D|h_a] \) e \( P[D|h_b] \) para diferentes \( V \) e observar a diferença. Como \( P[h_a] = 0.1 \) indica que um ataque é menos provável, \( P[h_a|D] \) se torna menor do que no caso anterior para os mesmos valores de \( V \).
+
+\end{tcolorbox}
+
+    \item Caso $P[h_a] = 0.1$, trace a curva $\log(P[h_a|D]/P[h_b|D])$ em função de $V$.
+    
+    \begin{tcolorbox}[colback=white, colframe=black, title=Resposta:]
+
+    A curva \( \log(P[h_a|D]/P[h_b|D]) \) representa a relação logarítmica entre a probabilidade de um ataque estar ocorrendo em relação à probabilidade de não haver ataque, para diferentes valores de \( V \).
+    
+    Com \( P[h_a] = 0.1 \), a equação que devemos traçar é:
+    $$
+    \log\left( \frac{P[h_a|D]}{P[h_b|D]} \right) = \log\left( \frac{P[D|h_a] \cdot 0.1}{P[D|h_b] \cdot 0.9} \right)
+    $$
+    
+    Substituindo as expressões para \( P[D|h_a] \) e \( P[D|h_b] \) em função de \( V \), podemos traçar a curva dessa razão logarítmica. Conforme \( V \) aumenta, a razão \( P[h_a|D]/P[h_b|D] \) também aumenta, indicando uma maior confiança de que um ataque está ocorrendo.
+    
+\end{tcolorbox}
+
+    \item Para $TPR = 0.9$ e $FPR = 0.1$, plote, em um mesmo gráfico, a função de probabilidade de massa:
+    \begin{enumerate}
+        \item do número de roteadores que alarmam quando há um ataque;
+        \item do número de roteadores que alarmam quando não há um ataque.
+    \end{enumerate}
+    Na implementação do classificador central (aquele que recebe os sinais dos roteadores domésticos, e que são os “sensores” em cada residência), você deve decidir a partir de quantos roteadores residenciais alarmando o classificador central deverá detectar que um ataque está ocorrendo.
+    \begin{enumerate}
+        \item Explique como avaliar o erro da sua decisão.
+        \item Estime esse erro para o valor escolhido.
+    \end{enumerate}
+
+
+    \begin{tcolorbox}[colback=white, colframe=black, title=Resposta:]
+
+    (a) Para o número de roteadores que alarmam quando há um ataque, usamos a distribuição binomial com \( TPR = 0.9 \). A função de probabilidade de massa (PMF) é dada por:
+    $$
+    P(V|h_a) = \binom{M}{V} (0.9)^V (0.1)^{M-V}
+    $$
+    
+    (b) Para o número de roteadores que alarmam quando não há um ataque, usamos a distribuição binomial com \( FPR = 0.1 \). A função de probabilidade de massa (PMF) é dada por:
+    $$
+    P(V|h_b) = \binom{M}{V} (0.1)^V (0.9)^{M-V}
+    $$
+    
+    A partir desses gráficos, podemos escolher um número de roteadores alarmando como o limiar para que o classificador central detecte um ataque.
+    
+    \textbf{(i) Explique como avaliar o erro da sua decisão.}
+    
+    O erro pode ser avaliado observando as taxas de falsos positivos e falsos negativos associadas ao limiar escolhido. Ao aumentar o limiar, reduzimos os falsos positivos, mas podemos aumentar os falsos negativos.
+    
+    \textbf{(ii) Estime esse erro para o valor escolhido.}
+    
+    Se o limiar for, por exemplo, \( V = 15 \), podemos calcular as probabilidades de erro com base nas funções de probabilidade de massa. Se muitos roteadores alarmam quando \( h_b \) é verdadeiro, teremos falsos positivos. Da mesma forma, se poucos roteadores alarmam quando \( h_a \) é verdadeiro, teremos falsos negativos.
+    
+\end{tcolorbox}
+
+
+
+%     \item O classificador central comete erros, evidentemente.
+%     \begin{enumerate}
+%         \item Calcule o $TPR_c$ e o $FPR_c$ do classificador central.
+%         \item Plote a ROC curve do classificador central.
+%         \item Compare o classificador central com o classificador residencial.
+%     \end{enumerate}
+
+
+
+% \begin{tcolorbox}[colback=white, colframe=black, title=Resposta:]
+
+% (a) O \( TPR_c \) (taxa de verdadeiros positivos do classificador central) e o \( FPR_c \) (taxa de falsos positivos) podem ser calculados usando os limiares que escolhemos para detectar ataques. Se o classificador central detecta um ataque quando \( V \) roteadores alarmam, então:
+% $$
+% TPR_c = P(V \geq \text{limiar} | h_a)
+% $$
+% e
+% $$
+% FPR_c = P(V \geq \text{limiar} | h_b)
+% $$
+
+% (b) A ROC curve (Receiver Operating Characteristic) é traçada plotando \( TPR_c \) contra \( FPR_c \) para diferentes limiares. Quanto maior o \( TPR_c \) para um dado \( FPR_c \), melhor é o desempenho do classificador central.
+
+% (c) O classificador central tende a ser mais confiável que os classificadores residenciais individuais, pois agrega as decisões de múltiplos roteadores. Isso reduz o impacto de falsos positivos e falsos negativos individuais, melhorando a detecção geral do sistema.
+
 
 \end{enumerate}
-
-\section*{Código}
-
-O código abaixo encontra-se no repositório \href{https://github.com/lhscaldas/cps769-ai-gen}{https://github.com/lhscaldas/cps769-ai-gen}, bem como o arquivo LaTex com o relatório.
-
-
-\lstinputlisting[language=Python,caption=código fornecido completo com algumas modificações]{Lista_2.py}
 
 \end{document}
