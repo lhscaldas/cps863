@@ -205,6 +205,7 @@ P[D|h_a] = \binom{M}{V} (0.24)^V (0.76)^{M-V}
 $$
 
 \end{tcolorbox}
+\newpage
 
     \item Calcule $P[D|h_b]$ em função de $V$ e $M$ (Likelihood).
     
@@ -262,6 +263,7 @@ P[h_b|D] = \frac{(0.1)^V (0.9)^{M - V}}{(0.24)^V (0.76)^{M - V} + (0.1)^V (0.9)^
 $$
     
 \end{tcolorbox}
+\newpage
 
     \item Qual o mínimo de roteadores que deveriam alarmar ($V$) para que você tenha confiança de que um ataque ocorreu.
     
@@ -280,13 +282,7 @@ $$
     \frac{(0.24)^V (0.76)^{M - V}}{(0.24)^V (0.76)^{M - V} + (0.1)^V (0.9)^{M - V}} > \frac{(0.1)^V (0.9)^{M - V}}{(0.24)^V (0.76)^{M - V} + (0.1)^V (0.9)^{M - V}}
     $$
     
-    Como o denominador é o mesmo dos dois lados da desigualdade, temos:
-    
-    $$
-    (0.24)^V (0.76)^{M - V} > (0.1)^V (0.9)^{M - V}
-    $$
-    
-    Rearranjando os termos, obtemos:
+    Cancelando o denominador, que é o mesmo dos dois lados da desigualdade, e rearranjando os termos, obtemos:
     
     $$
     \frac{(0.24)^V}{(0.1)^V} > \frac{(0.9)^{M - V}}{(0.76)^{M - V}}
@@ -347,9 +343,37 @@ $$
 P[h_b|D] = \frac{P[D|h_b] \cdot 0.9}{P[D|h_a] \cdot 0.1 + P[D|h_b] \cdot 0.9}
 $$
 
-As curvas de \( P[h_a|D] \) e \( P[h_b|D] \) em função de \( V \) mudam com essa nova probabilidade a priori, sendo necessário recalcular os valores de \( P[D|h_a] \) e \( P[D|h_b] \) para diferentes \( V \) e observar a diferença. Como \( P[h_a] = 0.1 \) indica que um ataque é menos provável, \( P[h_a|D] \) se torna menor do que no caso anterior para os mesmos valores de \( V \).
+Substituímos os valores conhecidos:
+
+\begin{itemize}
+    \item \( P[D|h_a] = \binom{M}{V} (0.24)^V (0.76)^{M - V} \)
+    \item \( P[D|h_b] = \binom{M}{V} (0.1)^V (0.9)^{M - V} \)
+\end{itemize}
+
+A fórmula para \( P[h_a|D] \) agora se torna:
+
+$$ P[h_a|D] = \frac{\binom{M}{V} (0.24)^V (0.76)^{M - V} \cdot 0.1}{\binom{M}{V} (0.24)^V (0.76)^{M - V} \cdot 0.1 + \binom{M}{V} (0.1)^V (0.9)^{M - V} \cdot 0.9} $$
+
+E para \( P[h_b|D] \):
+
+$$ P[h_b|D] = \frac{\binom{M}{V} (0.1)^V (0.9)^{M - V} \cdot 0.9}{\binom{M}{V} (0.24)^V (0.76)^{M - V} \cdot 0.1 + \binom{M}{V} (0.1)^V (0.9)^{M - V} \cdot 0.9} $$
+
+Simplificando $\binom{M}{V}$ e fazendo $M = 200$:
+
+$$ P[h_a|D] = \frac{(0.24)^V (0.76)^{200 - V} \cdot 0.1}{(0.24)^V (0.76)^{200 - V} \cdot 0.1 + (0.1)^V (0.9)^{200 - V} \cdot 0.9} $$
+
+$$ P[h_b|D] = \frac{(0.1)^V (0.9)^{200 - V} \cdot 0.9}{(0.24)^V (0.76)^{200 - V} \cdot 0.1 + (0.1)^V (0.9)^{200 - V} \cdot 0.9} $$
+
+Como demonstrado na figura \ref{fig:probabilidades}, a probabilidade de um ataque estar ocorrendo \( P[h_a|D] \) aumenta conforme \( V \) aumenta, enquanto a probabilidade de não haver ataque \( P[h_b|D] \) diminui. Isso é esperado, pois mais roteadores alarmando indica uma maior probabilidade de um ataque estar ocorrendo.
 
 \end{tcolorbox}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{fig/item_7.png}
+    \caption{Probabilidades \( P[h_a|D] \) e \( P[h_b|D] \) em função de \( V \) para \( P[h_a] = 0.1 \).}
+    \label{fig:probabilidades}
+\end{figure}
 
     \item Caso $P[h_a] = 0.1$, trace a curva $\log(P[h_a|D]/P[h_b|D])$ em função de $V$.
     
@@ -359,12 +383,19 @@ As curvas de \( P[h_a|D] \) e \( P[h_b|D] \) em função de \( V \) mudam com es
     
     Com \( P[h_a] = 0.1 \), a equação que devemos traçar é:
     $$
-    \log\left( \frac{P[h_a|D]}{P[h_b|D]} \right) = \log\left( \frac{P[D|h_a] \cdot 0.1}{P[D|h_b] \cdot 0.9} \right)
+    \log\left( \frac{P[h_a|D]}{P[h_b|D]} \right) = \log\left( \frac{P[D|h_a] \cdot 0.1}{P[D|h_b] \cdot 0.9} \right) = \log\left( \frac{(0.24)^V (0.76)^{200 - V} \cdot 0.1}{(0.1)^V (0.9)^{200 - V} \cdot 0.9} \right)
     $$
     
-    Substituindo as expressões para \( P[D|h_a] \) e \( P[D|h_b] \) em função de \( V \), podemos traçar a curva dessa razão logarítmica. Conforme \( V \) aumenta, a razão \( P[h_a|D]/P[h_b|D] \) também aumenta, indicando uma maior confiança de que um ataque está ocorrendo.
+    Podemos então traçar a curva dessa razão logarítmica, como visto na figura \ref{fig:log_probabilidades}. Conforme \( V \) aumenta, a razão \( P[h_a|D]/P[h_b|D] \) também aumenta, indicando uma maior confiança de que um ataque está ocorrendo.
     
 \end{tcolorbox}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{fig/item_8.png}
+    \caption{Razão logarítmica entre \( P[h_a|D] \) e \( P[h_b|D] \) em função de \( V \) para \( P[h_a] = 0.1 \).}
+    \label{fig:log_probabilidades}
+\end{figure}
 
     \item Para $TPR = 0.9$ e $FPR = 0.1$, plote, em um mesmo gráfico, a função de probabilidade de massa:
     \begin{enumerate}
@@ -380,27 +411,101 @@ As curvas de \( P[h_a|D] \) e \( P[h_b|D] \) em função de \( V \) mudam com es
 
     \begin{tcolorbox}[colback=white, colframe=black, title=Resposta:]
 
-    (a) Para o número de roteadores que alarmam quando há um ataque, usamos a distribuição binomial com \( TPR = 0.9 \). A função de probabilidade de massa (PMF) é dada por:
-    $$
-    P(V|h_a) = \binom{M}{V} (0.9)^V (0.1)^{M-V}
-    $$
+        Para \( TPR = 0.9 \) e \( FPR = 0.1 \), queremos traçar a função de probabilidade de massa (PMF) para o número de roteadores que alarmam em dois cenários:
+        
+        \begin{enumerate}
+            \item Quando há um ataque (hipótese \( h_a \)),
+            
+            A função de probabilidade segue a distribuição binomial:
+            $$
+            P(V | h_a) = \binom{M}{V} (TPR)^V (1 - TPR)^{M - V}
+            $$
+            onde:
+            \begin{itemize}
+                \item \( M = 200 \) é o número total de roteadores,
+                \item \( V \) é o número de roteadores que alarmam,
+                \item \( TPR = 0.9 \) é a taxa de verdadeiros positivos, ou seja, a probabilidade de um roteador alarmar corretamente quando há um ataque.
+            \end{itemize}
+            
+            Como \( TPR = 0.9 \), a maior parte dos roteadores deverá alarmar quando um ataque está ocorrendo, portanto a função de probabilidade de massa será concentrada em valores altos de \( V \), próximos a \( M \).
+
+            \item Quando não há um ataque (hipótese \( h_b \)),
+            
+            Aqui, a distribuição binomial também é utilizada, mas com \( FPR = 0.1 \) (taxa de falsos positivos):
+           $$
+           P(V | h_b) = \binom{M}{V} (FPR)^V (1 - FPR)^{M - V}
+           $$
+           onde:
+            \begin{itemize}
+                \item \( M = 200 \) é o número total de roteadores,
+                \item \( V \) é o número de roteadores que alarmam,
+                \item \( FPR = 0.1 \) é a probabilidade de um roteador alarmar erroneamente quando não há ataque.
+            \end{itemize}
+           Como \( FPR = 0.1 \), esperamos que poucos roteadores alarmem no cenário sem ataque. Portanto, a função de probabilidade de massa será concentrada em valores baixos de \( V \), próximos de zero.
+        \end{enumerate}
+        
+        \end{tcolorbox}
+
+        \begin{tcolorbox}[colback=white, colframe=black, title=Resposta (continuação):]
+        
+        \textbf{Explicação do Gráfico:}
+        
+        O gráfico resultante (figura \ref{fig:pmf}) tem duas curvas:
+        \begin{enumerate}
+            \item A primeira curva, \( P(V | h_a) \), mostra a probabilidade de \( V \) roteadores alarmarem quando há um ataque. Como \( TPR = 0.9 \), a probabilidade será maior para valores altos de \( V \), indicando que muitos roteadores devem alarmar quando o ataque ocorre.
+            \item A segunda curva, \( P(V | h_b) \), mostra a probabilidade de \( V \) roteadores alarmarem quando não há ataque. Como \( FPR = 0.1 \), a probabilidade será maior para valores baixos de \( V \), indicando que poucos roteadores alarmam quando não há ataque.
+        \end{enumerate}
+
+    \end{tcolorbox}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=\textwidth]{fig/item_9.png}
+        \caption{Funções de probabilidade de massa (PMF) para o número de roteadores que alarmam.}
+        \label{fig:pmf}
+    \end{figure}
+
+    \begin{tcolorbox}[colback=white, colframe=black, title=Resposta (continuação):]
+        
+        \textbf{Decisão do Limiar:}
+        
+        A partir do gráfico, podemos definir um limiar \( V_{\text{limiar}} \) que determina o número mínimo de roteadores alarmando necessário para que o classificador central conclua que um ataque está ocorrendo:
+        \begin{itemize}
+            \item Se \( V > V_{\text{limiar}} \), o classificador detecta um ataque.
+            \item Se \( V \leq V_{\text{limiar}} \), o classificador conclui que não há ataque.
+        \end{itemize}
+        
+        \textbf{Erro de Decisão:}
+        
+        O erro de decisão é composto por:
+        \begin{itemize}
+            \item Falsos positivos: ocorrem quando \( V > V_{\text{limiar}} \) no cenário sem ataque (\( h_b \)).
+            \item Falsos negativos: ocorrem quando \( V \leq V_{\text{limiar}} \) no cenário com ataque (\( h_a \)).
+        \end{itemize}
+        
+        A escolha do limiar \( V_{\text{limiar}} \) afeta diretamente a taxa de erro:
+
+        \begin{itemize}
+            \item Um limiar baixo aumenta os falsos positivos, pois mais alarmes serão registrados mesmo sem ataque.
+            \item Um limiar alto aumenta os falsos negativos, pois pode haver um ataque, mas o número de alarmes não é suficiente para detectá-lo.
+        \end{itemize}
+        
+        O ponto ideal de \( V_{\text{limiar}} \) deve ser escolhido de maneira a equilibrar os erros de decisão, minimizando falsos positivos e falsos negativos.
+        
+        \textbf{Estimativa do Erro:}
+        
+        Para um valor específico de \( V_{\text{limiar}} \), você pode estimar o erro somando:
+        \begin{itemize}
+            \item A probabilidade de falsos positivos \( P(V > V_{\text{limiar}} | h_b) \),
+            \item A probabilidade de falsos negativos \( P(V \leq V_{\text{limiar}} | h_a) \).
+        \end{itemize}
+
+        Essas probabilidades são obtidas a partir das funções de probabilidade de massa traçadas anteriormente.
+        
     
-    (b) Para o número de roteadores que alarmam quando não há um ataque, usamos a distribuição binomial com \( FPR = 0.1 \). A função de probabilidade de massa (PMF) é dada por:
-    $$
-    P(V|h_b) = \binom{M}{V} (0.1)^V (0.9)^{M-V}
-    $$
-    
-    A partir desses gráficos, podemos escolher um número de roteadores alarmando como o limiar para que o classificador central detecte um ataque.
-    
-    \textbf{(i) Explique como avaliar o erro da sua decisão.}
-    
-    O erro pode ser avaliado observando as taxas de falsos positivos e falsos negativos associadas ao limiar escolhido. Ao aumentar o limiar, reduzimos os falsos positivos, mas podemos aumentar os falsos negativos.
-    
-    \textbf{(ii) Estime esse erro para o valor escolhido.}
-    
-    Se o limiar for, por exemplo, \( V = 15 \), podemos calcular as probabilidades de erro com base nas funções de probabilidade de massa. Se muitos roteadores alarmam quando \( h_b \) é verdadeiro, teremos falsos positivos. Da mesma forma, se poucos roteadores alarmam quando \( h_a \) é verdadeiro, teremos falsos negativos.
-    
-\end{tcolorbox}
+    \end{tcolorbox}
+
+
 
 
 
