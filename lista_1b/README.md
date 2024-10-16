@@ -62,25 +62,31 @@ Responda as seguintes perguntas, mas só substitua os valores no final:
 
    **Resposta:**  
    Se o ataque está ocorrendo, temos:
+
    $$
    P[L = 1|\text{Inf}, h_a] = TPR = 0.8
    $$
+
    e
+
    $$
    P[L = 1|\overline{\text{Inf}}, h_a] = FPR = 0.1
    $$
 
-   Podemos calcular \( P[L = 1|h_a] \) pela lei total da probabilidade:
+   Podemos calcular \( $P[L = 1|h_a]$ \) pela lei total da probabilidade:
+
    $$
    P[L = 1|h_a] = P[L = 1|\text{Inf}, h_a] \cdot P[\text{Inf}] + P[L = 1|\overline{\text{Inf}}, h_a] \cdot P[\overline{\text{Inf}}]
    $$
 
    Substituindo os valores:
+
    $$
    P[L = 1|h_a] = 0.8 \cdot 0.2 + 0.1 \cdot 0.8 = 0.16 + 0.08 = 0.24
    $$
 
-   Agora, \( P[L = 0|h_a] \) é simplesmente o complementar de \( P[L = 1|h_a] \):
+   Agora, \( $P[L = 0|h_a]$ \) é simplesmente o complementar de \( $P[L = 1|h_a]$ \):
+
    $$
    P[L = 0|h_a] = 1 - P[L = 1|h_a] = 1 - 0.24 = 0.76
    $$
