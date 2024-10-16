@@ -512,21 +512,31 @@ Como demonstrado na figura \ref{fig:probabilidades}, a probabilidade de um ataqu
 
 
 
-% \begin{tcolorbox}[colback=white, colframe=black, title=Resposta:]
+\begin{tcolorbox}[colback=white, colframe=black, title=Resposta:]
 
-% (a) O \( TPR_c \) (taxa de verdadeiros positivos do classificador central) e o \( FPR_c \) (taxa de falsos positivos) podem ser calculados usando os limiares que escolhemos para detectar ataques. Se o classificador central detecta um ataque quando \( V \) roteadores alarmam, então:
-% $$
-% TPR_c = P(V \geq \text{limiar} | h_a)
-% $$
-% e
-% $$
-% FPR_c = P(V \geq \text{limiar} | h_b)
-% $$
+(a) O \( TPR_c \) (taxa de verdadeiros positivos do classificador central) e o \( FPR_c \) (taxa de falsos positivos do classificador central) são influenciados pela escolha do limiar \( V_{\text{limiar}} \):
 
-% (b) A ROC curve (Receiver Operating Characteristic) é traçada plotando \( TPR_c \) contra \( FPR_c \) para diferentes limiares. Quanto maior o \( TPR_c \) para um dado \( FPR_c \), melhor é o desempenho do classificador central.
+$$
+TPR_c = P(V > V_{\text{limiar}} | h_a)
+$$
+$$
+FPR_c = P(V > V_{\text{limiar}} | h_b)
+$$
 
-% (c) O classificador central tende a ser mais confiável que os classificadores residenciais individuais, pois agrega as decisões de múltiplos roteadores. Isso reduz o impacto de falsos positivos e falsos negativos individuais, melhorando a detecção geral do sistema.
+A escolha do limiar afeta diretamente as taxas de erro. Um limiar baixo aumenta \( TPR_c \) ao custo de um maior \( FPR_c \), enquanto um limiar alto pode reduzir \( FPR_c \) mas comprometer \( TPR_c \).
 
+(b) A curva ROC do classificador central é exibida na figura \ref{fig:roc}, mostrando \( TPR_c \) em função de \( FPR_c \) para diferentes limiares. Essa curva ajudará a visualizar a relação entre a taxa de alarmes corretos e a taxa de alarmes falsos.
+
+(c) A comparação entre o classificador central e os classificadores residenciais será baseada nas taxas de erro calculadas para diferentes limiares. Um bom ajuste para \( V_{\text{limiar}} \) permitirá ao classificador central superar os classificadores residenciais, oferecendo uma detecção mais eficaz.
+
+\end{tcolorbox}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{fig/item_10.png}
+    \caption{Curva ROC do classificador central.}
+    \label{fig:roc}
+\end{figure}
 
 \end{enumerate}
 
