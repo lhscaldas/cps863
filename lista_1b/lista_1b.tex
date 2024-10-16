@@ -417,30 +417,28 @@ Como demonstrado na figura \ref{fig:probabilidades}, a probabilidade de um ataqu
             
             A função de probabilidade segue a distribuição binomial:
             $$
-            P(V | h_a) = \binom{M}{V} (TPR)^V (1 - TPR)^{M - V}
+            P(V | h_a) = \binom{M}{V} (TPR \cdot P[\text{Inf}]  + FPR \cdot P[\overline{\text{Inf}}])^V (TNR \cdot P[\overline{\text{Inf}}] + FNR \cdot P[\text{Inf}])^{M - V}
             $$
-            onde:
-            \begin{itemize}
-                \item \( M = 200 \) é o número total de roteadores,
-                \item \( V \) é o número de roteadores que alarmam,
-                \item \( TPR = 0.9 \) é a taxa de verdadeiros positivos, ou seja, a probabilidade de um roteador alarmar corretamente quando há um ataque.
-            \end{itemize}
-            
-            Como \( TPR = 0.9 \), a maior parte dos roteadores deverá alarmar quando um ataque está ocorrendo, portanto a função de probabilidade de massa será concentrada em valores altos de \( V \), próximos a \( M \).
 
             \item Quando não há um ataque (hipótese \( h_b \)),
             
             Aqui, a distribuição binomial também é utilizada, mas com \( FPR = 0.1 \) (taxa de falsos positivos):
            $$
-           P(V | h_b) = \binom{M}{V} (FPR)^V (1 - FPR)^{M - V}
+           P(V | h_b) = \binom{M}{V} (FPR \cdot P[\text{Inf}] + FPR  \cdot P[\overline{\text{Inf}}])^V (TNR  \cdot P[\overline{\text{Inf}}] + TNR \cdot P[\text{Inf}])^{M - V}
            $$
+
            onde:
             \begin{itemize}
                 \item \( M = 200 \) é o número total de roteadores,
                 \item \( V \) é o número de roteadores que alarmam,
-                \item \( FPR = 0.1 \) é a probabilidade de um roteador alarmar erroneamente quando não há ataque.
+                \item \( TPR = 0.9 \) é a taxa de verdadeiros positivos, ou seja, a probabilidade de um roteador alarmar corretamente quando há um ataque.
+                \item \( FPR = 0.1 \) é a taxa de falsos positivos, ou seja, a probabilidade de um roteador alarmar erroneamente quando não há ataque.
+                \item \( FNR = 1 - TPR = 0.1 \) é a taxa de falsos negativos, ou seja, a probabilidade de um roteador não alarmar quando há um ataque.
+                \item \( TNR = 1 - FPR = 0.9 \) é a taxa de verdadeiros negativos, ou seja, a probabilidade de um roteador não alarmar quando não há ataque.
+                \item $P[\text{Inf}] = 0.2$ é a probabilidade de uma residência estar infectada.
+                \item $P[\overline{\text{Inf}}] = 1 - P[\text{Inf}] = 0.8$ é a probabilidade de uma residência não estar infectada.
             \end{itemize}
-           Como \( FPR = 0.1 \), esperamos que poucos roteadores alarmem no cenário sem ataque. Portanto, a função de probabilidade de massa será concentrada em valores baixos de \( V \), próximos de zero.
+
         \end{enumerate}
         
         \end{tcolorbox}
@@ -451,9 +449,11 @@ Como demonstrado na figura \ref{fig:probabilidades}, a probabilidade de um ataqu
         
         O gráfico resultante (figura \ref{fig:pmf}) tem duas curvas:
         \begin{enumerate}
-            \item A primeira curva, \( P(V | h_a) \), mostra a probabilidade de \( V \) roteadores alarmarem quando há um ataque. Como \( TPR = 0.9 \), a probabilidade será maior para valores altos de \( V \), indicando que muitos roteadores devem alarmar quando o ataque ocorre.
-            \item A segunda curva, \( P(V | h_b) \), mostra a probabilidade de \( V \) roteadores alarmarem quando não há ataque. Como \( FPR = 0.1 \), a probabilidade será maior para valores baixos de \( V \), indicando que poucos roteadores alarmam quando não há ataque.
+            \item A primeira curva, \( P(V | h_a) \), mostra a probabilidade de \( V \) roteadores alarmarem quando há um ataque. Como \( TPR = 0.9 \) e \( P[\text{Inf}] = 0.2 \), a probabilidade de alarme é uma combinação da taxa de verdadeiros positivos para residências infectadas e da taxa de falsos positivos para residências não infectadas. Isso significa que muitos roteadores devem alarmar, pois a combinação de \( TPR \) e \( FPR \) resulta em valores altos de \( V \).
+            
+            \item A segunda curva, \( P(V | h_b) \), mostra a probabilidade de \( V \) roteadores alarmarem quando não há ataque. Como \( FPR = 0.1 \) e \( P[\overline{\text{Inf}}] = 0.8 \), a probabilidade de alarme é determinada apenas pela taxa de falsos positivos, independentemente de a residência estar infectada ou não. Isso significa que a probabilidade será maior para valores baixos de \( V \), indicando que poucos roteadores alarmam quando não há ataque.
         \end{enumerate}
+
 
     \end{tcolorbox}
 
@@ -468,7 +468,7 @@ Como demonstrado na figura \ref{fig:probabilidades}, a probabilidade de um ataqu
         
         \textbf{Decisão do Limiar:}
         
-        A partir do gráfico, podemos definir um limiar \( V_{\text{limiar}} \) que determina o número mínimo de roteadores alarmando necessário para que o classificador central conclua que um ataque está ocorrendo:
+        A partir do gráfico, podemos definir um limiar \( V_{\text{limiar}} \) que determina o número mínimo de roteadores alarmando necessário para que o classificador central conclua que um ataque está ocorrendo. Esta decisão deve levar em consideração tanto as taxas de verdadeiros positivos e falsos positivos nas residências infectadas quanto nas não infectadas:
         \begin{itemize}
             \item Se \( V > V_{\text{limiar}} \), o classificador detecta um ataque.
             \item Se \( V \leq V_{\text{limiar}} \), o classificador conclui que não há ataque.
@@ -485,12 +485,12 @@ Como demonstrado na figura \ref{fig:probabilidades}, a probabilidade de um ataqu
         A escolha do limiar \( V_{\text{limiar}} \) afeta diretamente a taxa de erro:
 
         \begin{itemize}
-            \item Um limiar baixo aumenta os falsos positivos, pois mais alarmes serão registrados mesmo sem ataque.
-            \item Um limiar alto aumenta os falsos negativos, pois pode haver um ataque, mas o número de alarmes não é suficiente para detectá-lo.
+            \item Um limiar baixo aumenta os falsos positivos, pois mais alarmes serão registrados mesmo sem ataque, levando a uma detecção incorreta da presença de um ataque.
+            \item Um limiar alto aumenta os falsos negativos, pois pode haver um ataque, mas o número de alarmes não é suficiente para detectá-lo, resultando em uma falha na detecção.
         \end{itemize}
         
-        O ponto ideal de \( V_{\text{limiar}} \) deve ser escolhido de maneira a equilibrar os erros de decisão, minimizando falsos positivos e falsos negativos.
-        
+        O ponto ideal de \( V_{\text{limiar}} \) deve ser escolhido de maneira a equilibrar os erros de decisão, minimizando falsos positivos e falsos negativos, considerando as características das residências em relação à infecção.
+
         \textbf{Estimativa do Erro:}
         
         Para um valor específico de \( V_{\text{limiar}} \), você pode estimar o erro somando:
@@ -501,19 +501,14 @@ Como demonstrado na figura \ref{fig:probabilidades}, a probabilidade de um ataqu
 
         Essas probabilidades são obtidas a partir das funções de probabilidade de massa traçadas anteriormente.
         
-    
-    \end{tcolorbox}
+\end{tcolorbox}
 
-
-\end{enumerate}
-
-
-%     \item O classificador central comete erros, evidentemente.
-%     \begin{enumerate}
-%         \item Calcule o $TPR_c$ e o $FPR_c$ do classificador central.
-%         \item Plote a ROC curve do classificador central.
-%         \item Compare o classificador central com o classificador residencial.
-%     \end{enumerate}
+    \item O classificador central comete erros, evidentemente.
+    \begin{enumerate}
+        \item Calcule o $TPR_c$ e o $FPR_c$ do classificador central.
+        \item Plote a ROC curve do classificador central.
+        \item Compare o classificador central com o classificador residencial.
+    \end{enumerate}
 
 
 
@@ -533,6 +528,6 @@ Como demonstrado na figura \ref{fig:probabilidades}, a probabilidade de um ataqu
 % (c) O classificador central tende a ser mais confiável que os classificadores residenciais individuais, pois agrega as decisões de múltiplos roteadores. Isso reduz o impacto de falsos positivos e falsos negativos individuais, melhorando a detecção geral do sistema.
 
 
-
+\end{enumerate}
 
 \end{document}
