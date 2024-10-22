@@ -1,0 +1,95 @@
+Considere a questão abaixo:
+
+\section*{Questão 1}
+
+Responda as seguintes perguntas usando o dataset fornecido:
+
+1. Visualize os dados (em 2 ou 3 dimensões) para entender a estrutura dos dados.
+Explique o que você fez para visualizar as figuras. Descreva sua abordagem para visualizar os dados e quais insights podem ser obtidos do gráfico, se algum.
+
+2. Ajuste uma mistura de gaussianas com 4 componentes ao conjunto de dados. Calcule TODOS os parâmetros necessários para o modelo. Explique todas as etapas. Forneça detalhes de como você determina os parâmetros de melhor ajuste para cada modelo de mistura e descreva o processo de ajuste do modelo.
+
+3. Suponha que as classes 1 e 2 sejam uma mesma classe. Ajuste uma mistura de gaussianas com 3 componentes ao conjunto de dados.
+
+4. Suponha que as classes 1, 2 e 3 sejam uma mesma classe. Ajuste uma mistura de gaussianas com 2 componentes ao conjunto de dados.
+
+5. Mostre como estimar qual dos 3 modelos (2, 3 ou 4 gaussianos) melhor representa o conjunto de dados original, ignorando as classes do modelo. Justifique como chegou ao resultado, usando técnicas de avaliação de modelos como AIC, BIC ou outro critério. Estude e explique o que é AIC e BIC.
+
+6. Gere novas amostras com base no melhor modelo pelo seu critério. Plote os resultados. Visualize as amostras geradas e compare-as com o conjunto de dados original.
+
+
+Considere o dataset:
+
+feature 1,feature 2,feature 3,class label
+7.0697722136974335, 7.0940516753391636, 6.4209523151771499, 3
+2.5750002264976501, 1.8533486425876617, 1.0752477645874021, 4
+10.80561774969101, 8.398866544555883, 9.7629232863997029, 1
+10.216230273246765, 9.0078490184571756, 10.594705945438067, 1
+8.1959609985351562, 7.1377053111872648, 6.1158190766580578, 3
+5.5875160694122314, 6.905910717706794, 5.0505673521111598, 3
+6.8772387355566025, 6.4415290025866074, 7.3947546069881263, 3
+
+Considere também o código que voce mesmo gerou em outro chat para o item 1
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.patches as mpatches
+
+def visualizar_dados(csv_file):
+    """
+    Função para visualizar dados em 2 e 3 dimensões.
+    
+    Parâmetros:
+    csv_file (str): Caminho para o arquivo CSV.
+    """
+    # Carregar o dataset
+    df = pd.read_csv(csv_file)
+    X = df[['feature 1', 'feature 2', 'feature 3']].values
+    y = df['class label'].values
+
+    # Lista de combinações de features (vistas) para 2D
+    combinacoes = [
+        ('feature 1', 'feature 2'),
+        ('feature 1', 'feature 3'),
+        ('feature 2', 'feature 3')
+    ]
+
+    # Obter a paleta de cores do matplotlib
+    palette = plt.cm.Set1.colors  # Cores da paleta Set1
+    colors = [palette[int(label)-1] for label in y]
+    
+    # Mapeamento de rótulos para as legendas das classes
+    class_labels = {1: 'classe 1', 2: 'classe 2', 3: 'classe 3', 4: 'classe 4'}
+    legend_patches = [mpatches.Patch(color=palette[i], label=f'classe {i+1}') for i in range(len(class_labels))]
+
+    # Plotar as combinações 2D usando matplotlib scatter
+    for f1, f2 in combinacoes:
+        plt.figure(figsize=(8, 6))
+        plt.scatter(df[f1], df[f2], c=colors, edgecolor='k', s=50)
+        plt.title(f'Visualização {f1} vs {f2}')
+        plt.xlabel(f1)
+        plt.ylabel(f2)
+        plt.legend(handles=legend_patches)
+        plt.show()
+    
+    # Plotar a visualização em 3D com as mesmas cores e legendas
+    fig = plt.figure(figsize=(8, 6))
+    ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(df['feature 1'], df['feature 2'], df['feature 3'], c=colors, edgecolor='k', s=50)
+    ax.set_title('Visualização em 3D')
+    ax.set_xlabel('feature 1')
+    ax.set_ylabel('feature 2')
+    ax.set_zlabel('feature 3')
+    
+    # Adicionar a legenda no gráfico 3D
+    plt.legend(handles=legend_patches)
+    plt.show()
+
+if __name__ == "__main__":
+    # Exemplo de uso, com o caminho ajustado para a pasta lista_2
+    visualizar_dados('lista_2/lista2-data_set.csv')
+
+
+Me ajude a responder agora a pergunta 1, baseado nas figuras geradas pelo código acima.	Coloque a resposta dentro de um \begin{tcolorbox}[colback=white, colframe=black, title=Resposta:]
