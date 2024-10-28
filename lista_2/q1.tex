@@ -58,43 +58,47 @@ Explique o que você fez para visualizar as figuras. Descreva sua abordagem para
         \item \textbf{Função de Verossimilhança:} \\
         Dado que temos os rótulos \( y_i \) que indicam a qual gaussiana cada ponto \( x_i \) pertence, a função de verossimilhança é dada por:
         \[
-        L(\mu_k, \sigma_k^2, \pi_k) = \prod_{i=1}^{N} \prod_{k=1}^{K} \left[ \pi_k \cdot \mathcal{N}(x_i | \mu_k, \sigma_k^2) \right]^{\mathbb{1}(y_i = k)}
+        L(\mu_k, \Sigma_k, \pi_k) = \prod_{i=1}^{N} \prod_{k=1}^{K} \left[ \pi_k \cdot \mathcal{N}(x_i | \mu_k, \Sigma_k) \right]^{\mathbb{1}(y_i = k)}
         \]
-        Onde \( \mathbb{1}(y_i = k) \) é a função indicadora que vale 1 quando o dado \( x_i \) pertence à classe \( k \) e \( \mathcal{N}(x_i | \mu_k, \sigma_k^2) \) é a densidade da gaussiana.
-    
+        Onde \( \mathbb{1}(y_i = k) \) é a função indicadora que vale 1 quando o dado \( x_i \) pertence à classe \( k \) e \( \mathcal{N}(x_i | \mu_k, \Sigma_k) \) é a densidade da gaussiana multivariada.
+
         \item \textbf{Função de Log-Verossimilhança:} \\
         Tomamos o logaritmo da função de verossimilhança para simplificar o processo de maximização:
-        \[
-        \log L(\mu_k, \sigma_k^2, \pi_k) = \sum_{i=1}^{N} \sum_{k=1}^{K} \mathbb{1}(y_i = k) \left[ \log \pi_k - \frac{1}{2} \log (2\pi \sigma_k^2) - \frac{(x_i - \mu_k)^2}{2\sigma_k^2} \right]
-        \]
-    
+        
+            \begin{tabular}{c}
+                $\log L(\mu_k, \Sigma_k, \pi_k) =$  \\
+                
+                 $\sum_{i=1}^{N} \sum_{k=1}^{K} \mathbb{1}(y_i = k) \left[ \log \pi_k - \frac{1}{2} \log | 2\pi \Sigma_k | - \frac{1}{2} (x_i - \mu_k)^\top \Sigma_k^{-1} (x_i - \mu_k) \right]$
+            \end{tabular}
+        
+
         \item \textbf{Maximização via Derivação:}
         \begin{itemize}
             \item \textbf{Derivada em relação a \( \mu_k \):} \\
             A derivada da log-verossimilhança em relação a \( \mu_k \) é:
             \[
-            \frac{\partial \log L}{\partial \mu_k} = \sum_{i=1}^{N} \mathbb{1}(y_i = k) \frac{(x_i - \mu_k)}{\sigma_k^2}
+            \frac{\partial \log L}{\partial \mu_k} = \sum_{i=1}^{N} \mathbb{1}(y_i = k) \Sigma_k^{-1}(x_i - \mu_k)
             \]
             Igualando a zero, obtemos a estimativa para \( \mu_k \):
             \[
             \mu_k = \frac{1}{N_k} \sum_{x_i \in X_k} x_i
             \]
             Onde \( N_k \) é o número de amostras na classe \( k \).
-    
-            \item \textbf{Derivada em relação a \( \sigma_k^2 \):} \\
-            A derivada da log-verossimilhança em relação a \( \sigma_k^2 \) é:
+
+            \item \textbf{Derivada em relação a \( \Sigma_k \):} \\
+            A derivada da log-verossimilhança em relação à matriz de covariância \( \Sigma_k \) é:
             \[
-            \frac{\partial \log L}{\partial \sigma_k^2} = \sum_{i=1}^{N} \mathbb{1}(y_i = k) \left( -\frac{1}{2\sigma_k^2} + \frac{(x_i - \mu_k)^2}{2\sigma_k^4} \right)
+            \frac{\partial \log L}{\partial \Sigma_k} = \sum_{i=1}^{N} \mathbb{1}(y_i = k) \left( \frac{1}{2} \Sigma_k^{-1} - \frac{1}{2} \Sigma_k^{-1}(x_i - \mu_k)(x_i - \mu_k)^\top \Sigma_k^{-1} \right)
             \]
-            Igualando a zero, obtemos a estimativa para \( \sigma_k^2 \):
+            Igualando a zero, obtemos a estimativa para \( \Sigma_k \):
             \[
-            \sigma_k^2 = \frac{1}{N_k} \sum_{x_i \in X_k} (x_i - \mu_k)^2
+            \Sigma_k = \frac{1}{N_k} \sum_{x_i \in X_k} (x_i - \mu_k)(x_i - \mu_k)^\top
             \]
         \end{itemize}
     \end{enumerate}
 \end{tcolorbox}
 
-\begin{tcolorbox}[colback=white, colframe=black, title=Resposta(continuação):]
+\begin{tcolorbox}[colback=white, colframe=black, title=Resposta (continuação):]
     
     \begin{enumerate}
         \setcounter{enumii}{2}
@@ -112,17 +116,16 @@ Explique o que você fez para visualizar as figuras. Descreva sua abordagem para
             \]
         \end{itemize}
 
-    
         \item \textbf{Resumo das Soluções Fechadas:} \\
         - Médias: \( \mu_k = \frac{1}{N_k} \sum_{x_i \in X_k} x_i \) \\
-        - Variâncias: \( \sigma_k^2 = \frac{1}{N_k} \sum_{x_i \in X_k} (x_i - \mu_k)^2 \) \\
+        - Matrizes de Covariância: \( \Sigma_k = \frac{1}{N_k} \sum_{x_i \in X_k} (x_i - \mu_k)(x_i - \mu_k)^\top \) \\
         - Pesos: \( \pi_k = \frac{N_k}{N} \)
     
     \end{enumerate}
     
 
 \textbf{Implementação:}
-Utilizando um codigo python (presente no repositório no final deste relatório), as fórmulas finais para cada parâmetro foram implementadas e os resultados podem ser vistos nas tabelas \ref{tab:means}, \ref{tab:covariances}, \ref{tab:weights} e \ref{tab:log-lokelihood}.
+Utilizando um código Python (presente no repositório no final deste relatório), as fórmulas finais para cada parâmetro foram implementadas e os resultados podem ser vistos nas tabelas \ref{tab:means}, \ref{tab:covariances}, \ref{tab:weights} e \ref{tab:log-likelihood}.
 
 \end{tcolorbox}
 
@@ -130,28 +133,28 @@ Utilizando um codigo python (presente no repositório no final deste relatório)
 \begin{table}[H]
     \centering
     \caption{Médias das Gaussianas}
-    \begin{tabular}{|c|c|c|c|}
+    \begin{tabular}{|c|c|}
         \hline
-        Classe & Média 1 & Média 2 & Média 3 \\ \hline
-        1 & 9.8397 & 9.8468 & 9.9668 \\ \hline
-        2 & 5.1378 & 4.9909 & 5.0114 \\ \hline
-        3 & 6.9380 & 7.0204 & 7.0432 \\ \hline
-        4 & 1.9207 & 1.9505 & 1.9004 \\ \hline
+        Classe & Médias \\ \hline
+        1 & [9.8397, 9.8468, 9.9668] \\ \hline
+        2 & [5.1378, 4.9909, 5.0114] \\ \hline
+        3 & [6.9380, 7.0204, 7.0432] \\ \hline
+        4 & [1.9207, 1.9505, 1.9004] \\ \hline
     \end{tabular}
     \label{tab:means}
 \end{table}
 
-% Tabela das Variâncias
+% Tabela das Covariâncias
 \begin{table}[H]
     \centering
-    \caption{Variâncias das Gaussianas}
-    \begin{tabular}{|c|c|c|c|}
+    \caption{Covariâncias das Gaussianas}
+    \begin{tabular}{|c|c|}
         \hline
-        Classe & Variância 1 & Variância 2 & Variância 3 \\ \hline
-        1 & 1.0293 & 1.0579 & 1.0586 \\ \hline
-        2 & 0.9491 & 1.1505 & 0.9616 \\ \hline
-        3 & 0.9962 & 0.9633 & 0.9925 \\ \hline
-        4 & 0.9186 & 1.2481 & 0.6929 \\ \hline
+        Classe & Matrizes de Covariância \\ \hline
+        1 & \(\begin{bmatrix} 1.0345 & 0.2227 & 0.0477 \\ 0.2227 & 1.0632 & 0.2896 \\ 0.0477 & 0.2896 & 1.0639 \end{bmatrix}\) \\ \hline
+        2 & \(\begin{bmatrix} 0.9515 & -0.2641 & 0.0375 \\ -0.2641 & 1.1534 & 0.2035 \\ 0.0375 & 0.2035 & 0.9640 \end{bmatrix}\) \\ \hline
+        3 & \(\begin{bmatrix} 0.9995 & 0.1084 & -0.1126 \\ 0.1084 & 0.9665 & 0.2504 \\ -0.1126 & 0.2504 & 0.9958 \end{bmatrix}\) \\ \hline
+        4 & \(\begin{bmatrix} 0.9279 & 0.1247 & 0.0622 \\ 0.1247 & 1.2607 & 0.0047 \\ 0.0622 & 0.0047 & 0.6999 \end{bmatrix}\) \\ \hline
     \end{tabular}
     \label{tab:covariances}
 \end{table}
@@ -175,21 +178,22 @@ Utilizando um codigo python (presente no repositório no final deste relatório)
 \begin{table}[H]
     \centering
     \caption{Log-Verossimilhança das Gaussianas}
-    \begin{tabular}{|c|c|c|c|}
+    \begin{tabular}{|c|c|}
         \hline
-        Classe & Log-LH 1 & Log-LH 2 & Log-LH 3 \\ \hline
-        1 & -492.2914 & -486.7800 & -486.6553 \\ \hline
-        2 & -1002.2144 & -927.7639 & -996.4297 \\ \hline
-        3 & -719.5939 & -729.7360 & -720.7003 \\ \hline
-        4 & -243.2974 & -217.5307 & -279.9042 \\ \hline
+        Classe & Log-LH \\ \hline
+        1 & -849.8800 \\ \hline
+        2 & -1701.1983 \\ \hline
+        3 & -1275.4746 \\ \hline
+        4 & -424.0718 \\ \hline
     \end{tabular}
-    \label{tab:log-lokelihood}
+    \label{tab:log-likelihood}
 \end{table}
 
+\newpage 
 \item Suponha que as classes 1 e 2 sejam uma mesma classe. Ajuste uma mistura de gaussianas com 3 componentes ao conjunto de dados.
 
 \begin{tcolorbox}[colback=white, colframe=black, title=Resposta:]
-Para responder a essa pergunta, fiz as seguintes alterações no código do item anterior:
+Para responder a essa pergunta, foram feitas as seguintes alterações no código do item anterior:
     \begin{itemize}
         \item Unificação das Classes: A classe 2 foi substituída por 1 na coluna `class label' para tratar classes 1 e 2 como uma única classe.
         \item Ajuste da Mistura de Gaussianas: A mistura de gaussianas foi ajustada utilizando 3 componentes, refletindo a unificação das classes.
@@ -201,26 +205,28 @@ Os resultados obtidos estão nas tabelas \ref{tab:means_3}, \ref{tab:covariances
 \begin{table}[H]
     \centering
     \caption{Médias das Gaussianas}
-    \begin{tabular}{|c|c|c|c|}
+    \begin{tabular}{|c|c|}
         \hline
-        Classe & Média 1 & Média 2 & Média 3 \\ \hline
-        1 & 6.7051 & 6.6095 & 6.6632 \\ \hline
-        3 & 6.9380 & 7.0204 & 7.0432 \\ \hline
-        4 & 1.9207 & 1.9505 & 1.9004 \\ \hline
+        Classe & Médias \\ \hline
+        1 & [6.7051, 6.6095, 6.6632] \\ \hline
+        2 & [5.1378, 4.9909, 5.0114] \\ \hline
+        3 & [6.9380, 7.0204, 7.0432] \\ \hline
+        4 & [1.9207, 1.9505, 1.9004] \\ \hline
     \end{tabular}
     \label{tab:means_3}
 \end{table}
 
-% Tabela das Variâncias
+% Tabela das Covariâncias
 \begin{table}[H]
     \centering
-    \caption{Variâncias das Gaussianas}
-    \begin{tabular}{|c|c|c|c|}
+    \caption{Covariâncias das Gaussianas}
+    \begin{tabular}{|c|c|}
         \hline
-        Classe & Variância 1 & Variância 2 & Variância 3 \\ \hline
-        1 & 5.8888 & 6.3597 & 6.4509 \\ \hline
-        3 & 0.9962 & 0.9633 & 0.9925 \\ \hline
-        4 & 0.9186 & 1.2481 & 0.6929 \\ \hline
+        Classe & Matrizes de Covariância \\ \hline
+        1 & \(\begin{bmatrix} 5.8987 & 4.9804 & 5.2273 \\ 4.9804 & 6.3703 & 5.5882 \\ 5.2273 & 5.5882 & 6.4617 \end{bmatrix}\) \\ \hline
+        2 & \(\begin{bmatrix} 0.9515 & -0.2641 & 0.0375 \\ -0.2641 & 1.1534 & 0.2035 \\ 0.0375 & 0.2035 & 0.9640 \end{bmatrix}\) \\ \hline
+        3 & \(\begin{bmatrix} 0.9995 & 0.1084 & -0.1126 \\ 0.1084 & 0.9665 & 0.2504 \\ -0.1126 & 0.2504 & 0.9958 \end{bmatrix}\) \\ \hline
+        4 & \(\begin{bmatrix} 0.9279 & 0.1247 & 0.0622 \\ 0.1247 & 1.2607 & 0.0047 \\ 0.0622 & 0.0047 & 0.6999 \end{bmatrix}\) \\ \hline
     \end{tabular}
     \label{tab:covariances_3}
 \end{table}
@@ -233,6 +239,7 @@ Os resultados obtidos estão nas tabelas \ref{tab:means_3}, \ref{tab:covariances
         \hline
         Classe & Peso \\ \hline
         1 & 0.6 \\ \hline
+        2 & 0.4 \\ \hline
         3 & 0.3 \\ \hline
         4 & 0.1 \\ \hline
     \end{tabular}
@@ -243,15 +250,17 @@ Os resultados obtidos estão nas tabelas \ref{tab:means_3}, \ref{tab:covariances
 \begin{table}[H]
     \centering
     \caption{Log-Verossimilhança das Gaussianas}
-    \begin{tabular}{|c|c|c|c|}
+    \begin{tabular}{|c|c|}
         \hline
-        Classe & Log-LH 1 & Log-LH 2 & Log-LH 3 \\ \hline
-        1 & -2035.9044 & -1988.4486 & -1980.2493 \\ \hline
-        3 & -719.5939 & -729.7360 & -720.7003 \\ \hline
-        4 & -243.2974 & -217.5307 & -279.9042 \\ \hline
+        Classe & Log-LH \\ \hline
+        1 & -2553.9509 \\ \hline
+        2 & -1701.1983 \\ \hline
+        3 & -1275.4746 \\ \hline
+        4 & -424.0718 \\ \hline
     \end{tabular}
     \label{tab:log-likelihood_3}
 \end{table}
+
 
 \item Suponha que as classes 1, 2 e 3 sejam uma mesma classe. Ajuste uma mistura de gaussianas com 2 componentes ao conjunto de dados.
 
@@ -268,24 +277,28 @@ Os resultados obtidos estão nas tabelas \ref{tab:means_2}, \ref{tab:covariances
 \begin{table}[H]
     \centering
     \caption{Médias das Gaussianas}
-    \begin{tabular}{|c|c|c|c|}
+    \begin{tabular}{|c|c|}
         \hline
-        Classe & Média 1 & Média 2 & Média 3 \\ \hline
-        1 & 6.7827 & 6.7465 & 6.7899 \\ \hline
-        4 & 1.9207 & 1.9505 & 1.9004 \\ \hline
+        Classe & Médias \\ \hline
+        1 & [6.7827, 6.7465, 6.7899] \\ \hline
+        2 & [5.1378, 4.9909, 5.0114] \\ \hline
+        3 & [6.9380, 7.0204, 7.0432] \\ \hline
+        4 & [1.9207, 1.9505, 1.9004] \\ \hline
     \end{tabular}
     \label{tab:means_2}
 \end{table}
 
-% Tabela das Variâncias
+% Tabela das Covariâncias
 \begin{table}[H]
     \centering
-    \caption{Variâncias das Gaussianas}
-    \begin{tabular}{|c|c|c|c|}
+    \caption{Matrizes de Covariância das Gaussianas}
+    \begin{tabular}{|c|c|}
         \hline
-        Classe & Variância 1 & Variância 2 & Variância 3 \\ \hline
-        1 & 4.2700 & 4.5984 & 4.6635 \\ \hline
-        4 & 0.9186 & 1.2481 & 0.6929 \\ \hline
+        Classe & Matrizes de Covariância \\ \hline
+        1 & \(\begin{bmatrix} 4.2748 & 3.3758 & 3.4652 \\ 3.3758 & 4.6035 & 3.8414 \\ 3.4652 & 3.8414 & 4.6687 \end{bmatrix}\) \\ \hline
+        2 & \(\begin{bmatrix} 0.9515 & -0.2641 & 0.0375 \\ -0.2641 & 1.1534 & 0.2035 \\ 0.0375 & 0.2035 & 0.9640 \end{bmatrix}\) \\ \hline
+        3 & \(\begin{bmatrix} 0.9995 & 0.1084 & -0.1126 \\ 0.1084 & 0.9665 & 0.2504 \\ -0.1126 & 0.2504 & 0.9958 \end{bmatrix}\) \\ \hline
+        4 & \(\begin{bmatrix} 0.9279 & 0.1247 & 0.0622 \\ 0.1247 & 1.2607 & 0.0047 \\ 0.0622 & 0.0047 & 0.6999 \end{bmatrix}\) \\ \hline
     \end{tabular}
     \label{tab:covariances_2}
 \end{table}
@@ -298,6 +311,8 @@ Os resultados obtidos estão nas tabelas \ref{tab:means_2}, \ref{tab:covariances
         \hline
         Classe & Peso \\ \hline
         1 & 0.9 \\ \hline
+        2 & 0.4 \\ \hline
+        3 & 0.3 \\ \hline
         4 & 0.1 \\ \hline
     \end{tabular}
     \label{tab:weights_2}
@@ -307,11 +322,13 @@ Os resultados obtidos estão nas tabelas \ref{tab:means_2}, \ref{tab:covariances
 \begin{table}[H]
     \centering
     \caption{Log-Verossimilhança das Gaussianas}
-    \begin{tabular}{|c|c|c|c|}
+    \begin{tabular}{|c|c|}
         \hline
-        Classe & Log-LH 1 & Log-LH 2 & Log-LH 3 \\ \hline
-        1 & -2906.3538 & -2837.8480 & -2825.6889 \\ \hline
-        4 & -243.2974 & -217.5307 & -279.9042 \\ \hline
+        Classe & Log-LH \\ \hline
+        1 & -3830.7946 \\ \hline
+        2 & -1701.1983 \\ \hline
+        3 & -1275.4746 \\ \hline
+        4 & -424.0718 \\ \hline
     \end{tabular}
     \label{tab:log-likelihood_2}
 \end{table}
@@ -346,7 +363,9 @@ Os resultados obtidos estão nas tabelas \ref{tab:means_2}, \ref{tab:covariances
     
     Para determinar qual dos modelos de mistura gaussiana (2, 3 ou 4 componentes) melhor representa o conjunto de dados original, calculamos os critérios AIC e BIC para cada modelo ajustado. Os resultados estão resumidos na Tabela \ref{tab:aic_bic}.
     
-    Analisando os valores de AIC e BIC, podemos identificar o modelo com o menor valor, que indica o melhor ajuste aos dados, levando em consideração a penalização pela complexidade do modelo. Se as diferenças nos valores de AIC e BIC forem pequenas, poderíamos preferir o modelo com menos componentes devido à sua simplicidade, o que é uma prática comum na seleção de modelos. Assim, o modelo com 4 componentes é o mais adequado para representar o conjunto de dados original.
+    Analisando os valores de AIC e BIC, podemos identificar o modelo com o menor valor, que indica o melhor ajuste aos dados, levando em consideração a penalização pela complexidade do modelo. Se as diferenças nos valores de AIC e BIC forem pequenas, poderíamos preferir o modelo com menos componentes devido à sua simplicidade, o que é uma prática comum na seleção de modelos.
+
+    Neste exercício, o modelo com menos componentes (2 componentes) também apresentou os menores valores de AIC e BIC, indicando que é o modelo preferido para representar o conjunto de dados original.
     
     \end{tcolorbox}
     
@@ -357,11 +376,11 @@ Os resultados obtidos estão nas tabelas \ref{tab:means_2}, \ref{tab:covariances
             \hline
             \textbf{Modelo} & \textbf{AIC} & \textbf{BIC} \\
             \hline
-            2 componentes & 18635.25 & 18669.60 \\
+            2 componentes & 8523.73 & 8558.09 \\
             \hline
-            3 componentes & 17852.73 & 17906.71 \\
+            3 componentes & 8528.99 & 8582.98 \\
             \hline
-            4 componentes & 14635.79 & 14709.41 \\
+            4 componentes & 8531.25 & 8604.87 \\
             \hline
         \end{tabular}
         \label{tab:aic_bic}
