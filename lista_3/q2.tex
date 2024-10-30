@@ -1,0 +1,143 @@
+\textbf{Questão 2}
+
+Nesta questão, você usará o classificador Naive Bayes para classificar mensagens SMS como spam ou ham (não spam) usando o conjunto de dados SMS Spam Collection. Esse conjunto de dados contém uma série de mensagens SMS etiquetadas como spam ou ham e será utilizado para treinar e avaliar o desempenho do modelo Naive Bayes.
+
+\begin{enumerate}
+    \item Treinar um classificador Naive Bayes para classificar mensagens de texto.
+    \item Avaliar o desempenho do modelo em um conjunto de teste.
+    \item Discutir o impacto da suposição de independência do Naive Bayes e como ela afeta os resultados.
+\end{enumerate}
+
+\textbf{Dataset} O conjunto de dados que será utilizado é o “SMS Spam Collection”, disponível no Repositório de Aprendizado de Máquina da UCI. 
+Você pode baixá-lo do link abaixo: \url{https://archive.ics.uci.edu/ml/datasets/SMS+Spam+Collection}
+
+O conjunto de dados é composto por:
+
+\begin{enumerate}
+    \item Coluna 1: A etiqueta (”spam” ou ”ham”).
+    \item Coluna 2: A mensagem SMS em texto.
+\end{enumerate}
+
+Siga os passos a seguir para realizar o trabalho.
+
+\textbf{Passo 1: Preparação dos Dados:}
+
+\begin{enumerate}
+    \item Carregue o conjunto de dados e converta as etiquetas para formato binário: ``ham''= 0 e ``spam''= 1.
+    \begin{tcolorbox}[title=Resposta:]
+        Para carregar o conjunto de dados e converter as etiquetas para formato binário, utilizamos o Pandas para ler o arquivo e mapeamos ``ham'' para 0 e ``spam'' para 1:
+        
+        \[
+        \text{df['label'] = df['label'].map(\{\texttt{``ham'': 0, ``spam'': 1}\})}
+        \]
+        \end{tcolorbox}
+        
+        
+    \item Divida o conjunto de dados em um conjunto de treino (70\%) e um conjunto de teste (30\%).
+    \begin{tcolorbox}[title=Resposta:]
+        Para dividir o conjunto de dados em conjunto de treino (70\%) e conjunto de teste (30\%), utilizamos a função \texttt{train\_test\_split} da biblioteca \texttt{sklearn.model\_selection}:
+        
+        \[
+        \begin{aligned}
+        X\_train, X\_test, y\_train, y\_test = 
+        \text{train\_test\_split(df['sms'], df['label'],} \\
+        \text{test\_size=0.3, random\_state=42)}
+        \end{aligned}
+        \]
+        \end{tcolorbox}
+        
+        
+    \item Utilize o modelo de bag-of-words para transformar o texto das mensagens em uma representação numérica.,
+    \begin{tcolorbox}[title=Resposta:]
+        Para transformar o texto das mensagens em uma representação numérica, utilizamos o modelo de bag-of-words com a classe \texttt{CountVectorizer} da biblioteca \texttt{sklearn.feature\_extraction.text}:
+        
+        \[
+        \begin{aligned}
+        \text{vectorizer} &= \text{CountVectorizer()} \\
+        X\_train\_bow &= \text{vectorizer.fit\_transform(X\_train)} \\
+        X\_test\_bow &= \text{vectorizer.transform(X\_test)}
+        \end{aligned}
+        \]
+
+        O modelo bag-of-words transforma texto em uma representação numérica, criando um vetor para cada sms onde cada posição representa a frequência de uma palavra específica do vocabulário.
+
+        \end{tcolorbox}
+        
+\end{enumerate}
+
+\textbf{Passo 2: Treinamento do Modelo}
+
+\begin{enumerate}
+    \item Treine um classificador Naive Bayes multinomial usando o conjunto de treino.
+    \begin{tcolorbox}[title=Resposta:]
+        Para treinar um classificador Naive Bayes multinomial, a classe \texttt{NaiveBayesClassifier} inicia armazenando variáveis para as probabilidades de palavras em cada classe, as probabilidades a priori das classes e o vocabulário. No método \texttt{train}, primeiro conta-se a quantidade de mensagens de cada classe e calcula-se a probabilidade a priori de cada uma (ex.: probabilidade de uma mensagem ser ``ham'' ou ``spam''). Em seguida, o método conta quantas vezes cada palavra aparece em mensagens de cada classe e aplica suavização de Laplace para calcular as probabilidades condicionais das palavras em cada classe.
+        \end{tcolorbox}
+    \item Use o modelo treinado para prever se as mensagens do conjunto de teste são spam ou ham.
+    \begin{tcolorbox}[title=Resposta:]
+        O método \texttt{predict} calcula a probabilidade de uma mensagem pertencer a cada classe usando as probabilidades a priori e as probabilidades condicionais das palavras para as classes ``ham'' e ``spam''. Ele percorre cada palavra da mensagem e, se a palavra estiver no vocabulário, soma o logaritmo da probabilidade da palavra na classe correspondente à probabilidade acumulada da classe. O uso do logaritmo evita problemas de underflow, comuns ao multiplicar várias probabilidades pequenas, além de transformar o produto das probabilidades em uma soma, o que facilita o cálculo. Ao final, a classe com a maior probabilidade acumulada é atribuída como a predição da mensagem.
+        \end{tcolorbox}
+        
+    \newpage
+    \item Calcule a precisão (accuracy), precisão (precision), revocação (recall) e a pontuação F1 (F1-score) para o conjunto de teste.
+    \begin{tcolorbox}[title=Resposta:]
+        As métricas de desempenho são calculadas da seguinte forma:
+        
+        - \textbf{Acurácia (Accuracy)}: proporção de previsões corretas entre todas as previsões, calculada como 
+        \[
+        \text{Accuracy} = \frac{\text{Verdadeiros Positivos} + \text{Verdadeiros Negativos}}{\text{Total de Amostras}}
+        \]
+        
+        - \textbf{Precisão (Precision)}: proporção de previsões positivas corretas entre todas as previsões positivas, dada por
+        \[
+        \text{Precision} = \frac{\text{Verdadeiros Positivos}}{\text{Verdadeiros Positivos} + \text{Falsos Positivos}}
+        \]
+        
+        - \textbf{Revocação (Recall)}: proporção de verdadeiros positivos entre todos os casos que realmente são positivos, calculada como 
+        \[
+        \text{Recall} = \frac{\text{Verdadeiros Positivos}}{\text{Verdadeiros Positivos} + \text{Falsos Negativos}}
+        \]
+        
+        - \textbf{F1-score}: média harmônica entre precisão e revocação, utilizada para balancear as duas métricas:
+        \[
+        \text{F1-score} = \frac{2 \cdot \text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}
+        \]
+        
+        \textbf{Resultados:}
+        \begin{itemize}
+            \item \text{Acurácia}: 0.9904
+            \item \text{Precisão}: 0.9815
+            \item \text{Revocação}: 0.9464
+            \item \text{F1-score}: 0.9636
+        \end{itemize}
+        \end{tcolorbox}
+    
+    \newpage
+    \item Explique como o modelo Naive Bayes classifica uma mensagem como spam ou ham. Por que o Naive Bayes pode ser eficaz mesmo assumindo independência entre as palavras?
+    \begin{tcolorbox}[title=Resposta:]
+        O modelo Naive Bayes classifica uma mensagem como ``spam'' ou ``ham'' calculando a probabilidade de cada classe dada a mensagem, \(P(\text{classe} | \text{mensagem})\). Utilizando o teorema de Bayes, essa probabilidade é calculada como proporcional a \(P(\text{mensagem} | \text{classe}) \cdot P(\text{classe})\). O modelo assume independência entre as palavras, então a probabilidade condicional \(P(\text{mensagem} | \text{classe})\) é a multiplicação das probabilidades individuais de cada palavra dada a classe.
+        
+        Mesmo assumindo independência entre as palavras (o que geralmente não é realista, pois palavras em uma frase tendem a ser relacionadas), o Naive Bayes ainda é eficaz em muitos casos, pois as frequências das palavras nas classes ``spam'' e ``ham'' tendem a capturar padrões de linguagem característicos de cada categoria. Assim, mesmo que as palavras não sejam realmente independentes, o modelo consegue distinguir com precisão ``spam'' de ``ham'' com base em combinações de palavras típicas de cada classe.
+        \end{tcolorbox}
+        
+    \item Analise as métricas de avaliação (precisão, revocação, F1-score) obtidas. O modelo foi capaz de detectar bem as mensagens spam? Explique com base nas métricas.
+    \begin{tcolorbox}[title=Resposta:]
+        As métricas de avaliação indicam que o modelo Naive Bayes foi eficaz em detectar mensagens ``spam''. A acurácia de 0.9904 mostra que a maioria das mensagens foi classificada corretamente. A precisão de 0.9815 indica que quase todas as mensagens classificadas como ``spam'' realmente eram spam, minimizando falsos positivos. A revocação de 0.9464 sugere que o modelo foi capaz de identificar uma alta proporção dos spams existentes, mas ainda deixou de classificar alguns. O F1-score de 0.9636, combinando precisão e revocação, indica um bom equilíbrio entre as duas métricas. Portanto, com base nesses valores, o modelo conseguiu detectar bem as mensagens ``spam'', com poucos erros de classificação.
+        \end{tcolorbox}
+        
+    \newpage
+    \item O Naive Bayes faz uma suposição de independência entre as palavras da mensagem. Discuta como essa suposição pode afetar a classificação de mensagens. Por que, apesar dessa suposição, o modelo ainda pode ter uma boa performance?
+    \begin{tcolorbox}[title=Resposta:]
+        A suposição de independência entre as palavras significa que o Naive Bayes trata cada palavra como se ela não tivesse relação com as demais no contexto da mensagem. Essa suposição é irrealista, pois palavras em uma mensagem geralmente possuem dependências contextuais. Por exemplo, em uma mensagem de spam, frases como ``Free entry'' e ``win a prize'' têm um significado conjunto que indica spam mais fortemente do que cada palavra isoladamente. Ignorar essas dependências pode fazer com que o modelo perca nuances contextuais que ajudariam na classificação.
+        
+        Apesar disso, o Naive Bayes ainda pode ter boa performance, pois o padrão de ocorrência de certas palavras é característico para cada classe. Palavras como ``win'', ``prize'', ``entry'', e ``free'' aparecem frequentemente em mensagens de spam, enquanto termos mais comuns, como ``Ok'' e ``call'', tendem a ocorrer em mensagens ham. Assim, mesmo sem captar todas as relações contextuais, o modelo consegue diferenciar as classes com base nas frequências características de palavras, o que costuma ser suficiente para bons resultados.
+        \end{tcolorbox}
+        
+        
+    \item Discuta um cenário em que a suposição de independência do Naive Bayes pode prejudicar significativamente a precisão do modelo.
+    \begin{tcolorbox}[title=Resposta:]
+        Um cenário em que a suposição de independência do Naive Bayes pode prejudicar a precisão do modelo ocorre em mensagens onde o contexto entre as palavras é essencial para determinar o sentido. Por exemplo, no dataset SMSSpamCollection, mensagens que contenham sequências como ``call me now'' ou ``urgent call'' podem ter interpretações diferentes dependendo do tom e das palavras associadas. 
+        
+        Em ``ham'', expressões como ``call me later'' ou ``can we chat tomorrow'' são comuns e contextualmente neutras. Já em ``spam'', frases como ``urgent call now'' ou ``win now, call today'' sugerem mais urgência e intenção de induzir uma resposta imediata. Naive Bayes, assumindo independência, pode ignorar essas nuances de contexto e tratar palavras como ``call'' e ``now'' separadamente, o que reduz a precisão ao classificar mensagens ambíguas. Em mensagens onde o sentido resulta da combinação de palavras e contexto, a performance do Naive Bayes é limitada.
+        \end{tcolorbox}
+        
+\end{enumerate}
