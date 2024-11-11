@@ -93,6 +93,8 @@ O objetivo é verificar se é possível classificar os usuários usando 2 classe
     
     Foram necessárias 32 iterações para resolver o problema. O critério de parada utilizado foi a diferença entre os valores dos parâmetros estimados em duas iterações consecutivas. O algoritmo para quando a diferença entre os valores dos parâmetros estimados é menor que \(10^{-4}\).
     \item \textbf{Quais os valores dos parâmetros encontrados? Quantos usuários foram alocados a cada uma das duas classes?}
+    
+    Os valores dos parâmetros encontrados são apresentados nas tabelas \ref{tab:prob_priori}, \ref{tab:prob_cond_0} e \ref{tab:prob_cond_1}.
 
 % Tabela para probabilidades a priori
 \begin{table}[H]
@@ -112,15 +114,15 @@ O objetivo é verificar se é possível classificar os usuários usando 2 classe
 \begin{table}[H]
     \centering
     \caption{Probabilidades condicionais finais - Classe 0}
-    \begin{tabular}{cccc}
+    \begin{tabular}{c|cccc}
         \hline
-        Nota 1 & Nota 2 & Nota 3 & Nota 4 \\
+        & Nota 1 & Nota 2 & Nota 3 & Nota 4 \\
         \hline
-        0.5703 & 0.2006 & 0.1323 & 0.0967 \\ 
-        0.5760 & 0.1860 & 0.1265 & 0.1115 \\ 
-        0.2374 & 0.3492 & 0.2163 & 0.1971 \\ 
-        0.1095 & 0.1224 & 0.2991 & 0.4690 \\ 
-        0.1416 & 0.0896 & 0.2924 & 0.4763 \\ 
+        Tipo 1 & 0.5703 & 0.2006 & 0.1323 & 0.0967 \\ 
+        Tipo 2 & 0.5760 & 0.1860 & 0.1265 & 0.1115 \\ 
+        Tipo 3 & 0.2374 & 0.3492 & 0.2163 & 0.1971 \\ 
+        Tipo 4 & 0.1095 & 0.1224 & 0.2991 & 0.4690 \\ 
+        Tipo 5 & 0.1416 & 0.0896 & 0.2924 & 0.4763 \\ 
         \hline
     \end{tabular}
     \label{tab:prob_cond_0}
@@ -130,19 +132,21 @@ O objetivo é verificar se é possível classificar os usuários usando 2 classe
 \begin{table}[H]
     \centering
     \caption{Probabilidades condicionais finais - Classe 1}
-    \begin{tabular}{cccc}
+    \begin{tabular}{c|cccc}
         \hline
-        Nota 1 & Nota 2 & Nota 3 & Nota 4 \\
+        & Nota 1 & Nota 2 & Nota 3 & Nota 4 \\
         \hline
-        0.0902 & 0.0926 & 0.3077 & 0.5095 \\ 
-        0.1068 & 0.0843 & 0.3188 & 0.4902 \\ 
-        0.3160 & 0.3178 & 0.1744 & 0.1918 \\ 
-        0.6037 & 0.1993 & 0.0885 & 0.1085 \\ 
-        0.6201 & 0.1990 & 0.0726 & 0.1083 \\ 
+        Tipo 1 & 0.0902 & 0.0926 & 0.3077 & 0.5095 \\ 
+        Tipo 2 & 0.1068 & 0.0843 & 0.3188 & 0.4902 \\ 
+        Tipo 3 & 0.3160 & 0.3178 & 0.1744 & 0.1918 \\ 
+        Tipo 4 & 0.6037 & 0.1993 & 0.0885 & 0.1085 \\ 
+        Tipo 5 & 0.6201 & 0.1990 & 0.0726 & 0.1083 \\ 
         \hline
     \end{tabular}
     \label{tab:prob_cond_1}
 \end{table}
+
+A tabela \ref{tab:qtd_usuarios} mostra a quantidade de usuários alocados em cada classe, o que foi calculado com base nas responsabilidades obtidas após a convergência do algoritmo. Foi atribuída para cada usuário a classe com maior responsabilidade.
 
 % Tabela para quantidade de usuários em cada classe
 \begin{table}[H]
@@ -161,7 +165,7 @@ O objetivo é verificar se é possível classificar os usuários usando 2 classe
 
     \item \textbf{O resultado da clusterização fez algum sentido? Explique e justifique sua resposta.}
     
-    O resultado da clusterização parece fazer sentido, pois o modelo identificou dois grupos com padrões distintos de avaliação de filmes. As probabilidades a priori mostram uma divisão significativa entre as classes, com uma leve predominância de usuários na Classe 1. As probabilidades condicionais indicam que a Classe 1 tende a concentrar notas mais altas para certos tipos de filmes, enquanto a Classe 0 apresenta uma distribuição mais equilibrada. Assim, o modelo parece ter capturado diferentes perfis de avaliação entre os grupos de usuários, sugerindo que a clusterização reflete padrões de preferência reais.
+    O resultado da clusterização parece fazer sentido, pois o modelo identificou dois grupos com padrões distintos de avaliação de filmes. As probabilidades a priori mostram uma divisão significativa entre as classes, com uma leve predominância de usuários na Classe 1. As probabilidades condicionais indicam que a Classe 0 tende a concentrar notas mais altas para certos tipos de filmes (tipos 4 e 5), enquanto a Classe 1 tende a concentrar notas mais altas para outros tipos (tipos 1 e 2). Assim, o modelo parece ter capturado diferentes perfis de avaliação entre os grupos de usuários, sugerindo que a clusterização reflete padrões de preferência reais.
 
     \item \textbf{Qual a probabilidade do i-ésimo usuário ser alocado ao cluster 1? Explique sua resposta de forma genérica e escolha um dos 1000 usuários para exemplificar.}
     
@@ -254,7 +258,10 @@ A probabilidade do usuário pertencer ao cluster 0 é, portanto, maior que a do 
 
     \item \textbf{Como você classificaria um usuário que votou 3,2,?,2,3? Isto é, o usuário não votou na feature número 3. Explique.}
     
-    Para classificar um usuário que votou nas notas 3, 2, ?, 2 e 3, onde a terceira nota está ausente, calculamos a probabilidade de essa sequência de votos ter sido gerada por cada cluster e comparamos os resultados. Os dados utilizados para o cálculo foram retirados das Tabelas \ref{tab:prob_priori}, \ref{tab:prob_cond_0} e \ref{tab:prob_cond_1}.
+    Para classificar um usuário que votou nas notas 3, 2, ?, 2 e 3, onde a terceira nota está ausente, calculamos a probabilidade de essa sequência de votos ter sido gerada por cada cluster, "marginalizando" sobre a feature ausente, e comparando os resultados.  Esse método é válido porque o modelo Naive Bayes assume independência condicional entre as features, permitindo ignorar a feature ausente sem impactar as demais. 
+    
+    
+    Os dados utilizados para o cálculo foram retirados das Tabelas \ref{tab:prob_priori}, \ref{tab:prob_cond_0} e \ref{tab:prob_cond_1}.
 
 Primeiro, para o \textbf{Cluster 0}, utilizamos a probabilidade a priori \( P(C_0) = 0.4203 \) e as probabilidades condicionais apenas para as notas observadas:
 \begin{align*}
@@ -289,7 +296,7 @@ P(C_0 | X) = \frac{0.000962}{0.000962 + 0.000111} \approx 0.8967
 P(C_1 | X) = \frac{0.000111}{0.000962 + 0.000111} \approx 0.1033
 \]
 
-Após a normalização, a soma das probabilidades de pertença aos clusters é 1. Como \( P(\text{Cluster 0}) \approx 0.8967 \) é maior que \( P(\text{Cluster 1}) \approx 0.1033 \), concluímos que o usuário com as notas (3, 2, ?, 2, 3) deveria ser alocado ao \textbf{Cluster 0}.
+Após a normalização, a soma das probabilidades de pertença aos clusters é 1. Como \( P(C_0 | X) \approx 0.8967 \) é maior que \( P(C_1 | X) \approx 0.1033 \), concluímos que o usuário com as notas (3, 2, ?, 2, 3) deveria ser alocado ao \textbf{Cluster 0}.
 
 \end{enumerate}
 
