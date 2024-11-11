@@ -2,14 +2,294 @@
 
 O objetivo desta questão é adquirir experiência com o algoritmo Expectation Maximization (EM). Para isso, você deve implementar sua solução, que deverá estar bem explicada. A implementação pode ser feita facilmente em Octave, R, Python, etc.
 
-\begin{itemize}
-    \item (a) Quantos parâmetros deverão ser estimados para o modelo Naive Bayes a ser construído?
-    \item (b) Explique as equações usadas para resolver o problema.
-    \item (c) Baseado no item anterior, explique sua implementação, incluindo as escolhas para a inicialização do código.
-    \item (d) Quantas iterações foram necessárias para resolver o problema? Qual o teste de parada utilizado?
-    \item (e) Quais os valores dos parâmetros encontrados? Quantos usuários foram alocados a cada uma das duas classes?
-    \item (f) O resultado da clusterização fez algum sentido? Explique e justifique sua resposta.
-    \item (g) Qual a probabilidade do i-ésimo usuário ser alocado ao cluster 1? Explique sua resposta de forma genérica e escolha um dos 1000 usuários para exemplificar.
-    \item (h) Um usuário que votou 1,2,3,4,2 deveria ser alocado ao cluster 1 ou 2? Justifique.
-    \item (i) Como você classificaria um usuário que votou 3,2,?,2,3? Isto é, o usuário não votou na feature número 3. Explique.
-\end{itemize}
+O dataset fornecido contém o resultado de uma votação de mil usuários em 5 tipos de filmes. Cada usuário dá uma nota de 1 a 4 para cada tipo de filme, onde 1 significa "não gosto" e 4 "gosto muito". Os tipos de filmes são, por exemplo, Ação, Comédia, Romance, Suspense e Ficção Científica.
+
+O objetivo é verificar se é possível classificar os usuários usando 2 classes. Para isso, você escolhe o modelo Naive Bayes pela simplicidade e deve utilizar o algoritmo EM para essa tarefa.
+
+\begin{enumerate}[label=(\alph*)]
+
+    \item \textbf{Quantos parâmetros deverão ser estimados para o modelo Naive Bayes a ser construído?}
+
+        Para um modelo Naive Bayes com duas classes e cinco tipos de filmes, onde cada usuário atribui uma nota de 1 a 4, precisamos estimar os seguintes parâmetros:
+        
+        \begin{itemize}
+            \item Probabilidades a priori para cada classe \( P(C_k) \), totalizando 2 parâmetros.
+            \item Probabilidades condicionais para cada possível nota (1 a 4) em cada tipo de filme, por classe \( P(X_{i,j} | C_k) \). Com 5 tipos de filmes e 4 possíveis notas, temos \(5 \times 4 \times 2 = 40\) parâmetros.
+        \end{itemize}
+        
+        Portanto, o total de parâmetros a serem estimados é \(2 + 40 = 42\).
+
+        
+    \item \textbf{Explique as equações usadas para resolver o problema.}
+
+        Para resolver o problema utilizando o modelo Naive Bayes com Expectation Maximization (EM), utilizei as seguintes equações:
+        
+        \textbf{Definição das Variáveis:}
+        \begin{itemize}
+            \item \( C_k \): Classe \( k \) (onde \( k = 1, 2 \), pois temos duas classes).
+            \item \( X_i \): Observação do \( i \)-ésimo usuário, representando suas notas para os diferentes tipos de filmes.
+            \item \( F_j \): Tipo de filme \( j \) (ex.: Ação, Comédia, etc., onde \( j = 1, 2, \ldots, 5 \) para cinco tipos de filmes).
+            \item \( X_{i,j} \): Nota atribuída pelo \( i \)-ésimo usuário ao tipo de filme \( F_j \), variando entre 1 e 4.
+            \item \( P(C_k) \): Probabilidade a priori de um usuário pertencer à classe \( C_k \).
+            \item \( P(X_{i,j} | C_k) \): Probabilidade condicional de uma nota específica \( X_{i,j} \) em um tipo de filme \( F_j \), dado que o usuário pertence à classe \( C_k \).
+            \item \( r_{i,k} \): Responsabilidade de cada classe \( C_k \) pela observação \( X_i \), representando a probabilidade de \( X_i \) pertencer à classe \( C_k \) dado o conjunto de notas.
+        \end{itemize}
+        
+        \textbf{Explicação das Equações:}
+        
+        \begin{itemize}
+            \item \textbf{Probabilidades a priori:}  
+            A probabilidade a priori de cada classe \( C_k \) é estimada pela proporção de usuários na classe \( C_k \):
+            \[
+            P(C_k) = \frac{\text{Número de observações em } C_k}{\text{Número total de observações (usuários)}}
+            \]
+ 
+        
+            \item \textbf{Probabilidade Condicional de uma Feature:}  
+            Com todos os usuários avaliando cada tipo de filme, a probabilidade condicional para cada nota \( X_{i,j} \) atribuída a \( F_j \) dado \( C_k \) é dada por:
+            \[
+            P(X_{i,j} | C_k) = \frac{\text{Número de vezes que a nota } X_{i,j} \text{ foi observada para } F_j \text{ em } C_k}{\text{Número total de usuários em } C_k}
+            \]
+
+            \item \textbf{Responsabilidade (E-step):}  
+            A responsabilidade \( r_{i,k} \) representa a probabilidade de que uma observação \( X_i \) pertence à classe \( C_k \) dado o conjunto de notas, e é dada por:
+            \[
+            r_{i,k} = P(C_k | X_i) = \frac{P(C_k) \prod_{j=1}^{5} P(X_{i,j} | C_k)}{\sum_{l=1}^{2} P(C_l) \prod_{j=1}^{5} P(X_{i,j} | C_l)}
+            \]
+        
+            \item \textbf{Atualização de parâmetros (M-step):}  
+            Utilizando as responsabilidades \( r_{i,k} \), atualizamos as probabilidades a priori:
+            \[
+            P(C_k) = \frac{\sum_{i=1}^{n} r_{i,k}}{n}
+            \]
+            e as probabilidades condicionais:
+            \[
+            P(X_{i,j} | C_k) = \frac{\sum_{i=1}^{n} r_{i,k} \cdot \mathbb{1}(X_{i,j} = x)}{\sum_{i=1}^{n} r_{i,k}}
+            \]
+            onde \( \mathbb{1}(X_{i,j} = x) \) é uma função indicadora que vale 1 quando \( X_{i,j} = x \) e 0 caso contrário. Essas atualizações continuam até atingir o critério de parada.
+            \end{itemize}
+        
+
+
+    \item \textbf{Baseado no item anterior, explique sua implementação, incluindo as escolhas para a inicialização do código.}
+    
+
+    O código \ref{cod:EM} implementa o algoritmo Expectation-Maximization (EM) para um modelo Naive Bayes, com o objetivo de estimar as probabilidades a priori das classes e as probabilidades condicionais de cada nota para cada tipo de filme.
+
+    Primeiro, as constantes do problema são definidas: número de classes (2), tipos de filmes (5) e valores possíveis para as notas (de 1 a 4). As probabilidades a priori das classes são inicializadas aleatoriamente usando uma distribuição Dirichlet, garantindo que a soma das probabilidades seja 1. As probabilidades condicionais para cada combinação de nota, tipo de filme e classe também são inicializadas com uma distribuição Dirichlet, criando um array tridimensional [classe, tipo de filme, nota].
+    
+    O algoritmo EM é implementado em uma função que realiza o processo iterativo até convergir. 
+    
+    No \textbf{E-step}, o código calcula as responsabilidades para cada observação e classe. A responsabilidade é calculada multiplicando a probabilidade a priori da classe pela probabilidade condicional da sequência de notas observadas para cada tipo de filme. Esses valores são então normalizados para que a soma das responsabilidades para cada observação seja 1.
+    
+    No \textbf{M-step}, as probabilidades a priori e condicionais são atualizadas. As novas probabilidades a priori são obtidas pela média das responsabilidades de cada classe sobre todas as observações. As probabilidades condicionais são recalculadas como somas ponderadas das responsabilidades para cada nota, tipo de filme e classe. Em seguida, elas são normalizadas para garantir que cada conjunto de probabilidades condicionais some 1.
+    
+    O \textbf{critério de parada} verifica a diferença entre as probabilidades antigas e novas. Se essa diferença for menor que um valor de tolerância, o algoritmo é interrompido, indicando convergência. Caso contrário, o processo é repetido até o limite de iterações.
+
+    \lstinputlisting[language=Python, label=cod:EM, caption=Algoritmo de Expectation-Maximization (EM)]{q1.py}
+    
+        
+    \item \textbf{Quantas iterações foram necessárias para resolver o problema? Qual o teste de parada utilizado?}
+    
+    Foram necessárias 32 iterações para resolver o problema. O critério de parada utilizado foi a diferença entre os valores dos parâmetros estimados em duas iterações consecutivas. O algoritmo para quando a diferença entre os valores dos parâmetros estimados é menor que \(10^{-4}\).
+    \item \textbf{Quais os valores dos parâmetros encontrados? Quantos usuários foram alocados a cada uma das duas classes?}
+
+% Tabela para probabilidades a priori
+\begin{table}[H]
+    \centering
+    \caption{Probabilidades a priori finais}
+    \begin{tabular}{cc}
+        \hline
+        Classe 0 & Classe 1 \\
+        \hline
+        0.4203 & 0.5797 \\
+        \hline
+    \end{tabular}
+    \label{tab:prob_priori}
+\end{table}
+
+% Tabela para probabilidades condicionais finais - Classe 0
+\begin{table}[H]
+    \centering
+    \caption{Probabilidades condicionais finais - Classe 0}
+    \begin{tabular}{cccc}
+        \hline
+        Nota 1 & Nota 2 & Nota 3 & Nota 4 \\
+        \hline
+        0.5703 & 0.2006 & 0.1323 & 0.0967 \\ 
+        0.5760 & 0.1860 & 0.1265 & 0.1115 \\ 
+        0.2374 & 0.3492 & 0.2163 & 0.1971 \\ 
+        0.1095 & 0.1224 & 0.2991 & 0.4690 \\ 
+        0.1416 & 0.0896 & 0.2924 & 0.4763 \\ 
+        \hline
+    \end{tabular}
+    \label{tab:prob_cond_0}
+\end{table}
+
+% Tabela para probabilidades condicionais finais - Classe 1
+\begin{table}[H]
+    \centering
+    \caption{Probabilidades condicionais finais - Classe 1}
+    \begin{tabular}{cccc}
+        \hline
+        Nota 1 & Nota 2 & Nota 3 & Nota 4 \\
+        \hline
+        0.0902 & 0.0926 & 0.3077 & 0.5095 \\ 
+        0.1068 & 0.0843 & 0.3188 & 0.4902 \\ 
+        0.3160 & 0.3178 & 0.1744 & 0.1918 \\ 
+        0.6037 & 0.1993 & 0.0885 & 0.1085 \\ 
+        0.6201 & 0.1990 & 0.0726 & 0.1083 \\ 
+        \hline
+    \end{tabular}
+    \label{tab:prob_cond_1}
+\end{table}
+
+% Tabela para quantidade de usuários em cada classe
+\begin{table}[H]
+    \centering
+    \caption{Quantidade de usuários alocados em cada classe}
+    \begin{tabular}{cc}
+        \hline
+        Classe 0 & Classe 1 \\
+        \hline
+        425 & 575 \\
+        \hline
+    \end{tabular}
+    \label{tab:qtd_usuarios}
+\end{table}
+
+
+    \item \textbf{O resultado da clusterização fez algum sentido? Explique e justifique sua resposta.}
+    
+    O resultado da clusterização parece fazer sentido, pois o modelo identificou dois grupos com padrões distintos de avaliação de filmes. As probabilidades a priori mostram uma divisão significativa entre as classes, com uma leve predominância de usuários na Classe 1. As probabilidades condicionais indicam que a Classe 1 tende a concentrar notas mais altas para certos tipos de filmes, enquanto a Classe 0 apresenta uma distribuição mais equilibrada. Assim, o modelo parece ter capturado diferentes perfis de avaliação entre os grupos de usuários, sugerindo que a clusterização reflete padrões de preferência reais.
+
+    \item \textbf{Qual a probabilidade do i-ésimo usuário ser alocado ao cluster 1? Explique sua resposta de forma genérica e escolha um dos 1000 usuários para exemplificar.}
+    
+    A probabilidade do primeiro usuário ser alocado ao cluster 1 é calculada com base na probabilidade a priori do cluster 1 e nas probabilidades condicionais de suas notas para cada tipo de filme, dados encontrados nas tabelas \ref{tab:prob_priori}, \ref{tab:prob_cond_0} e \ref{tab:prob_cond_1}. As notas do primeiro usuário são 3, 1, 2, 3 e 3 para os cinco tipos de filmes.
+
+    Para o \textbf{Cluster 1}, temos:
+    \[
+    P(C_1) = 0.5797
+    \]
+    \[
+    P(\text{nota 3 no filme 1}|C_1) = 0.3077, \quad P(\text{nota 1 no filme 2}|C_1) = 0.1068
+    \]
+    \[
+    P(\text{nota 2 no filme 3}|C_1) = 0.3178, \quad P(\text{nota 3 no filme 4}|C_1) = 0.0885
+    \]
+    \[
+    P(\text{nota 3 no filme 5}|C_1) = 0.0726
+    \]
+    Calculando a probabilidade conjunta para o cluster 1:
+    \[
+    P(C_1) \times 0.3077 \times 0.1068 \times 0.3178 \times 0.0885 \times 0.0726 = 3.769 \times 10^{-5}
+    \]
+    
+    Para o \textbf{Cluster 0}, temos:
+    \[
+    P(C_0) = 0.4203
+    \]
+    \[
+    P(\text{nota 3 no filme 1}|C_0) = 0.1323, \quad P(\text{nota 1 no filme 2}|C_0) = 0.5761
+    \]
+    \[
+    P(\text{nota 2 no filme 3}|C_0) = 0.3492, \quad P(\text{nota 3 no filme 4}|C_0) = 0.2991
+    \]
+    \[
+    P(\text{nota 3 no filme 5}|C_0) = 0.2924
+    \]
+    Calculando a probabilidade conjunta para o cluster 0:
+    \[
+    P(C_0) \times 0.1323 \times 0.5761 \times 0.3492 \times 0.2991 \times 0.2924 = 0.0028
+    \]
+    
+    A probabilidade do usuário pertencer ao cluster 1 é então:
+    \[
+    \frac{3.769 \times 10^{-5}}{3.769 \times 10^{-5} + 0.0028} \approx 0.0134
+    \]
+    
+    Portanto, a probabilidade do primeiro usuário ser alocado ao cluster 1 é aproximadamente 1.34\%, indicando que ele provavelmente pertence ao cluster 0.
+    
+    \item \textbf{Um usuário que votou 1,2,3,4,2 deveria ser alocado ao cluster 0 ou 1? Justifique.}
+    
+    Para determinar se um usuário que votou nas notas 1, 2, 3, 4 e 2 deveria ser alocado ao cluster 0 ou 1, calculamos a probabilidade de essa sequência ter sido gerada por cada cluster e comparamos os resultados.
+
+Para o \textbf{Cluster 0}:
+\[
+P(C_0) = 0.4203
+\]
+\[
+P(\text{nota 1 no filme 1}|C_0) = 0.5703, \quad P(\text{nota 2 no filme 2}|C_0) = 0.1860
+\]
+\[
+P(\text{nota 3 no filme 3}|C_0) = 0.2163, \quad P(\text{nota 4 no filme 4}|C_0) = 0.4690
+\]
+\[
+P(\text{nota 2 no filme 5}|C_0) = 0.0896
+\]
+A probabilidade conjunta para o cluster 0 é:
+\[
+P(C_0) \times 0.5703 \times 0.1860 \times 0.2163 \times 0.4690 \times 0.0896 = 0.0004
+\]
+
+Para o \textbf{Cluster 1}:
+\[
+P(C_1) = 0.5797
+\]
+\[
+P(\text{nota 1 no filme 1}|C_1) = 0.0902, \quad P(\text{nota 2 no filme 2}|C_1) = 0.0843
+\]
+\[
+P(\text{nota 3 no filme 3}|C_1) = 0.1744, \quad P(\text{nota 4 no filme 4}|C_1) = 0.1085
+\]
+\[
+P(\text{nota 2 no filme 5}|C_1) = 0.1990
+\]
+A probabilidade conjunta para o cluster 1 é:
+\[
+P(C_1) \times 0.0902 \times 0.0843 \times 0.1744 \times 0.1085 \times 0.1990 = 1.79 \times 10^{-5}
+\]
+
+A probabilidade do usuário pertencer ao cluster 0 é, portanto, maior que a do cluster 1. Logo, este usuário deveria ser alocado ao \textbf{cluster 0}.
+
+    \item \textbf{Como você classificaria um usuário que votou 3,2,?,2,3? Isto é, o usuário não votou na feature número 3. Explique.}
+    
+    Para classificar um usuário que votou nas notas 3, 2, ?, 2 e 3, onde a terceira nota está ausente, calculamos a probabilidade de essa sequência de votos ter sido gerada por cada cluster e comparamos os resultados. Os dados utilizados para o cálculo foram retirados das Tabelas \ref{tab:prob_priori}, \ref{tab:prob_cond_0} e \ref{tab:prob_cond_1}.
+
+Primeiro, para o \textbf{Cluster 0}, utilizamos a probabilidade a priori \( P(C_0) = 0.4203 \) e as probabilidades condicionais apenas para as notas observadas:
+\begin{align*}
+    P(C_0) &\times P(\text{nota 3 no filme 1}|C_0) \\
+    &\times P(\text{nota 2 no filme 2}|C_0) \\
+    &\times P(\text{nota 2 no filme 4}|C_0) \\
+    &\times P(\text{nota 3 no filme 5}|C_0)
+\end{align*}    
+Substituindo os valores, obtemos:
+\[
+0.4203 \times 0.1323 \times 0.1860 \times 0.2991 \times 0.2924 = 0.000962
+\]
+
+Para o \textbf{Cluster 1}, utilizamos a probabilidade a priori \( P(C_1) = 0.5797 \) e as probabilidades condicionais para as notas observadas:
+\begin{align*}
+    P(C_1) &\times P(\text{nota 3 no filme 1}|C_1) \\
+    &\times P(\text{nota 2 no filme 2}|C_1) \\
+    &\times P(\text{nota 2 no filme 4}|C_1) \\
+    &\times P(\text{nota 3 no filme 5}|C_1)
+\end{align*}
+Substituindo os valores, obtemos:
+\[
+0.5797 \times 0.3077 \times 0.0843 \times 0.1085 \times 0.0726 = 0.000111
+\]
+
+Essas probabilidades conjuntas representam as probabilidades não normalizadas de que as notas observadas tenham sido geradas por cada cluster. Para obter as probabilidades de pertença normalizadas (ou responsabilidades) para cada cluster, dividimos cada probabilidade conjunta pela soma das probabilidades conjuntas:
+
+\[
+P(C_0 | X) = \frac{0.000962}{0.000962 + 0.000111} \approx 0.8967
+\]
+\[
+P(C_1 | X) = \frac{0.000111}{0.000962 + 0.000111} \approx 0.1033
+\]
+
+Após a normalização, a soma das probabilidades de pertença aos clusters é 1. Como \( P(\text{Cluster 0}) \approx 0.8967 \) é maior que \( P(\text{Cluster 1}) \approx 0.1033 \), concluímos que o usuário com as notas (3, 2, ?, 2, 3) deveria ser alocado ao \textbf{Cluster 0}.
+
+\end{enumerate}
+
