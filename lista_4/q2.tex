@@ -240,9 +240,136 @@ Simplificando as transições redundantes nos estados que possuem mais de uma tr
             $}
         
 
-    \item Suponha que o robô inicia a sua caminhada no quadrado indicado na figura (quadrado (2, 1)). Qual a probabilidade do robô se encontrar no quadrado (1, 3) vinte minutos após o início?
+    \item \textbf{Suponha que o robô inicia a sua caminhada no quadrado indicado na figura (quadrado (2, 1)). Qual a probabilidade do robô se encontrar no quadrado (1, 3) vinte minutos após o início?}
+    
+    Seja $v(t)$ o vetor de probabilidade do robô se encontrar em cada um dos estados após $t$ minutos. O vetor de probabilidade inicial é dado por 
+    $$
+    v(0) = \begin{bmatrix}
+        (1,1): 0.0000\\
+        (1,2): 0.0000\\
+        (1,3): 0.0000\\
+        (1,4): 0.0000\\
+        (2,1): 1.0000\\
+        (2,2): 0.0000\\
+        (2,3): 0.0000\\
+        (2,4): 0.0000\\
+        (3,1): 0.0000\\
+        (3,2): 0.0000\\
+        (3,3): 0.0000\\
+        (3,4): 0.0000\\
+        (4,1): 0.0000\\
+        (4,2): 0.0000\\
+        (4,3): 0.0000\\
+        (4,4): 0.0000\\
+    \end{bmatrix}^T.
+    $$
+     A probabilidade do robô se encontrar no quadrado (1, 3) após 20 minutos é dada por 
+    $$v(20) = v(0) \cdot P^{20},$$
+    onde $P$ é a matriz de transição de estados do sistema, deduzida no item anterior.
 
-    \item O robô está caminhando há muito tempo $t \to \infty$. Onde você apostaria que o robô se encontra?
+    Utilizando um código em Python para fazer os cálculos, temos:
 
-    \item Quantos minutos em média leva para o robô retornar ao ponto de partida? É preciso pensar um pouquinho. Proponha uma possível solução a ser discutida na próxima aula. (Para a próxima aula, não precisa resolver esse item, mas será essencial mostrar que você pensou numa solução para apresentar)
+    $$
+    v(20) = \begin{bmatrix}
+        (1,1): 0.0000\\
+        (1,2): 0.0215\\
+        (1,3): 0.0294\\
+        (1,4): 0.0273\\
+        (2,1): 0.2002\\
+        (2,2): 0.0000\\
+        (2,3): 0.0468\\
+        (2,4): 0.0333\\
+        (3,1): 0.1711\\
+        (3,2): 0.1215\\
+        (3,3): 0.0840\\
+        (3,4): 0.0000\\
+        (4,1): 0.0000\\
+        (4,2): 0.1034\\
+        (4,3): 0.0859\\
+        (4,4): 0.0756\\
+    \end{bmatrix}^T
+    $$
+
+    Assim, a probabilidade do robô se encontrar no quadrado (1, 3) vinte minutos após o início é de $\boldsymbol{0.0294}$.
+
+    \item \textbf{O robô está caminhando há muito tempo $t \to \infty$. Onde você apostaria que o robô se encontra?}
+    
+    Quando o robô está caminhando por um longo período de tempo, o comportamento dele tende a se estabilizar em um \textbf{estado estacionário} à medida que \( t \to \infty \). Este estado estacionário representa as probabilidades de o robô estar em cada estado, independentemente de seu estado inicial.
+
+    Para uma matriz de transição \( P \), o vetor de estado estacionário \( \pi \) é aquele que satisfaz a equação:
+
+    $$
+    \pi P = \pi,
+    $$
+
+ou seja, o vetor de estado estacionário é invariável sob a multiplicação pela matriz de transição.
+
+O estado estacionário \( \pi \) pode ser obtido de forma numérica resolvendo o sistema de equações $ \pi P = \pi $, juntamente com a condição de que a soma das probabilidades no vetor \( \pi \) deve ser igual a 1 (\( \sum \pi_i = 1 \)).
+
+Para isso, foram implementadas as funções abaixo em Python:
+
+\begin{lstlisting}[language=Python]
+    # Função para inicializar o vetor de probabilidade com um 1 aleatório, evitando estados proibidos
+    estados_proibidos = [(0, 0), (3, 0), (1, 1), (2, 3)]
+    def vetor_inicial_aleatorio(n):
+        vetor = np.zeros(n)
+        while True:
+            posicao = np.random.randint(0, n)  # Posição aleatória entre 0 e n-1
+            # Verificar se a posição é proibida
+            if (posicao // 4, posicao % 4) not in estados_proibidos:
+                vetor[posicao] = 1  # Definir a posição aleatória como 1
+                break
+        return vetor
+    
+    # Função para calcular o estado estacionário
+    def estado_estacionario(P, tol=1e-6, max_iter=1000):
+        n = P.shape[0]
+        pi = vetor_inicial_aleatorio(n)
+        print(f"pi: {pi}")
+        for _ in range(max_iter):
+            pi_novo = np.dot(pi, P)
+            # Verifica a norma L2 da diferença
+            if np.linalg.norm(pi_novo - pi) < tol:
+                return pi_novo
+            pi = pi_novo
+        return pi
+\end{lstlisting}
+
+Utilizando as funções acima, obtemos o vetor de estado estacionário \( \pi \) para a matriz de transição \( P \) deduzida no item 1:
+
+$$
+\pi = \begin{bmatrix}
+    (1,1): 0.0000\\
+    (1,2): 0.0833\\
+    (1,3): 0.0833\\
+    (1,4): 0.0833\\
+    (2,1): 0.0833\\
+    (2,2): 0.0000\\
+    (2,3): 0.0833\\
+    (2,4): 0.0833\\
+    (3,1): 0.0833\\
+    (3,2): 0.0833\\
+    (3,3): 0.0833\\
+    (3,4): 0.0000\\
+    (4,1): 0.0000\\
+    (4,2): 0.0833\\
+    (4,3): 0.0833\\
+    (4,4): 0.0833\\
+\end{bmatrix}^T
+$$
+
+Assim, podemos concluir que, após um longo período de tempo, o robô estará em qualquer um dos estados não proibidos com probabilidade de \( \boldsymbol{0.0833} \).
+
+    \item \textbf{Quantos minutos em média leva para o robô retornar ao ponto de partida? É preciso pensar um pouquinho. Proponha uma possível solução a ser discutida na próxima aula. (Para a próxima aula, não precisa resolver esse item, mas será essencial mostrar que você pensou numa solução para apresentar)}
+    
+    Para isso, precisamos calcular o tempo médio de retorno ao ponto de partida, que é o tempo esperado para o robô retornar ao estado inicial (2, 1) após sair dele.
+
+    A probabilidade de o robô estar no estado \( i \) no estado estacionário, denotada por \( \pi_i \), também pode ser vista como a frequência relativa de visitas ao estado \( i \) após um longo tempo. Assim, o tempo médio de retorno ao estado \( i \) a partir do estado inicial é dado por
+    
+    $$ \mathbb{E}[\tau_i] = \frac{1}{\pi_i}, $$
+
+    onde \( \tau_i \) é o tempo de retorno ao estado \( i \) a partir do estado inicial.
+
+    Como $\pi_{(2,1)}$ foi calculado no item anterior como $0.0833$, o tempo médio de retorno ao ponto de partida é de aproximadamente 12 minutos.
+
 \end{enumerate}
