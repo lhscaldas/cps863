@@ -16,9 +16,8 @@ O objetivo é verificar se é possível classificar os usuários usando 2 classe
             \item Probabilidades a priori para cada classe \( P(C_k) \), totalizando 2 parâmetros.
             \item Probabilidades condicionais para cada possível nota (1 a 4) em cada tipo de filme, por classe \( P(X_{i,j} | C_k) \). Com 5 tipos de filmes e 4 possíveis notas, temos \(5 \times 4 \times 2 = 40\) parâmetros.
         \end{itemize}
-        
-        Portanto, o total de parâmetros a serem estimados é \(2 + 40 = 42\).
 
+        Entretanto, como a soma das probabilidades a priori deve ser 1 e a soma das probabilidades condicionais para cada tipo de filme para cada classe também deve ser 1, podemos reduzir o número de parâmetros. Assim, temos um total de \(1 + 5 \times 3 \times 2 = 31\) parâmetros a serem estimados.
         
     \item \textbf{Explique as equações usadas para resolver o problema.}
 
