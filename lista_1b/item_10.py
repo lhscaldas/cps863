@@ -4,8 +4,8 @@ from math import comb
 
 # Definindo os parâmetros
 M = 200  # Número total de roteadores
-TPR = 0.9  # Taxa de verdadeiros positivos
-FPR = 0.1  # Taxa de falsos positivos
+TPR = 0.8  # Taxa de verdadeiros positivos
+FPR = 0.2  # Taxa de falsos positivos
 FNR = 1 - TPR  # Taxa de falsos negativos
 TNR = 1 - FPR  # Taxa de verdadeiros negativos
 P_inf = 0.2  # Probabilidade de uma residência estar infectada
