@@ -4,11 +4,188 @@ Nesta tarefa, você usará o algoritmo Expectation-Maximization (EM) para inferi
 
 \begin{enumerate}
     \item \textbf{Explique as equações usadas para resolver o problema.}
+    \begin{tcolorbox}[title=Resposta:]
+        Podemos utilizar uma Mistura de Gaussianas Multivariadas (GMM) para agrupar os clientes em 3 classes. A função de verossimilhança é dada por:
+        \begin{equation}
+            p(x_i | C_k, \Theta) = \frac{1}{(2\pi)^{d/2}|\Sigma_k|^{1/2}} \exp\left(-\frac{1}{2}(x_i - \mu_k)^T\Sigma_k^{-1}(x_i - \mu_k)\right),
+        \end{equation}
+    onde $x_i$ é o vetor de notas do i-ésimo cliente, $C_k$ é a k-ésima classe, $\Theta = \{\mu_k, \Sigma_k\}$ é o conjunto de parâmetros do modelo, $\mu_k$ é a média da k-ésima classe e $\Sigma_k$ é a matriz de covariância da k-ésima classe. A probabilidade de um cliente pertencer a uma classe é dada por:
+    \begin{equation}
+        p(C_k | x_i, \Theta) = \frac{P(x_i | C_k, \Theta)P(C_k)}{\sum_{j=1}^{K}p(x_i | C_j, \Theta)p(C_j)},
+    \end{equation}
+    onde $P(C_k)=\pi_k$ é a probabilidade a priori de um cliente pertencer a uma classe e $K$ é o número de classes.
+    
+    O algoritmo EM é utilizado para encontrar os parâmetros do modelo que maximizam a verossimilhança e pode ser dividido em duas etapas:
+    \begin{itemize}
+        \item \textbf{Expectation (E-step):} Calcula a probabilidade de um cliente pertencer a uma classe (chamada responsabilidade ($r_{ik}$)), dada as notas que ele deu e os parâmetros do modelo.
+        \begin{equation}
+            r_{ik} = \frac{P(x_i | C_k, \Theta)P(C_k)}{\sum_{j=1}^{K}p(x_i | C_j, \Theta)p(C_j)}.
+        \end{equation}
+
+    \end{itemize}
+
+    \end{tcolorbox}
+
+    \begin{tcolorbox}[title=Resposta (continuação):]
+        \begin{itemize}
+
+        \item \textbf{Maximization (M-step):} Atualiza os parâmetros do modelo com base nas responsabilidades calculadas no passo anterior.
+        \begin{equation}
+            \mu_k = \frac{\sum_{i=1}^{N}r_{ik}x_i}{\sum_{i=1}^{N}r_{ik}},
+        \end{equation}
+        \begin{equation}
+            \Sigma_k = \frac{\sum_{i=1}^{N}r_{ik}(x_i - \mu_k)(x_i - \mu_k)^T}{\sum_{i=1}^{N}r_{ik}},
+        \end{equation}
+        \begin{equation}
+            \pi_k = \frac{\sum_{i=1}^{N}r_{ik}}{N}.
+        \end{equation}
+
+    \end{itemize}
+    
+    
+    Para lidar com os clientes com valores faltantes, o calculo da verossimilhança é feito considerando apenas as notas que o cliente deu. Consequentemente, o calculo da responsabilidade no E-step e os calculos da média e da matriz de covariância no M-step deverão ser modificados para considerar isso:
+
+    \begin{itemize}
+        \item \textbf{Expectation (E-step):} 
+        A fórmula da responsabilidade em si não muda:
+        \begin{equation}
+            r_{ik} = \frac{P(x_i | C_k, \Theta)P(C_k)}{\sum_{j=1}^{K}p(x_i | C_j, \Theta)P(C_j)},
+        \end{equation}
+        Porém agora a verossimilhança é calculada considerando apenas as notas que o cliente deu (observadas):
+        \begin{equation}
+            p(x_i | C_k, \Theta) = \frac{1}{(2\pi)^{d_{obs}/2}|\Sigma_k^{obs}|^{1/2}} \exp\left(-\frac{1}{2}(x_i^{obs} - \mu_k^{obs})^T(\Sigma_k^{obs})^{-1}(x_i^{obs} - \mu_k^{obs})\right).
+        \end{equation}
+
+        \item \textbf{Maximization (M-step):}
+        A média e a matriz de covariância são atualizadas considerando apenas as notas que o cliente deu:
+        \begin{equation}
+            \mu_{kj} = \frac{\sum_{i=1}^{N}r_{ik}x_{ij}}{\sum_{i=1}^{N}r_{ik}},
+        \end{equation}
+       para $x_{ij}$ observados. 
+        
+        A matriz de covariância é atualizada de forma similar:
+        \begin{equation}
+            \Sigma_k = \frac{\sum_{i=1}^N r_{ik} \cdot \left((x_i - \mu_k)(x_i - \mu_k)^T \odot M_i \right)}{\sum_{i=1}^N r_{ik}},
+        \end{equation}
+        onde $M_i$ é uma matriz diagonal que indica quais notas do cliente $i$ são observadas.
+
+        A probabilidade a priori é atualizada igual era antes.
+
+    \end{itemize}
+
+    \end{tcolorbox}
+
     \item \textbf{Baseado no item anterior, explique a sua implementação, incluindo as suas escolhas para a inicialização do código.}
+    \begin{tcolorbox}[title=Resposta:]
+        Baseado no item anterior, foi implementado o código \ref{lst:q2} em Python.
+    \end{tcolorbox}
+    \lstinputlisting[language=Python, caption={Implementação do algoritmo EM para clusterização de clientes.}, label={lst:q2}]{q2.py}
     \item \textbf{Quantas iterações foram necessárias para resolver o problema? Qual o teste de parada utilizado?}
+    \begin{tcolorbox}[title=Resposta:]
+        Foram necessárias 845 iterações. O teste de parada utilizado foi a maior diferença entre as responsabilidades atuais e anteriores ser menor que $1e-6$, caso contrário o algoritmo para de iterar após 1000 iterações.
+    \end{tcolorbox}
     \item \textbf{Quais os valores dos parâmetros encontrados? Quantos usuários foram alocados a cada uma das duas classes?}
+    \begin{tcolorbox}[title=Resposta:]
+        \begin{itemize}
+            \item \textbf{Médias:}
+            \[
+            \begin{bmatrix}
+            2.80142676 & 2.82231989 & 5.28452529 & 5.71271474 \\
+            1.92130354 & 1.52285243 & 7.59991985 & 5.84940941 \\
+            5.71049743 & 5.66366009 & 2.56139984 & 2.04457428
+            \end{bmatrix}
+            \]
+        
+            \item \textbf{Covariâncias:}
+            \begin{itemize}
+                \item \textbf{Classe 1:}
+                \[
+                \begin{bmatrix}
+                1.86255092 & 0.61817744 & 0.29823839 & 0.08422267 \\
+                0.61817744 & 2.0491576 & 0.54000828 & 0.43614989 \\
+                0.29823839 & 0.54000828 & 2.69371827 & 1.43494672 \\
+                0.08422267 & 0.43614989 & 1.43494672 & 3.16638644
+                \end{bmatrix}
+                \]
+        
+                \item \textbf{Classe 2:}
+                \[
+                \begin{bmatrix}
+                0.28133565 & 0.20948873 & 0.45271546 & 0.48887734 \\
+                0.20948873 & 0.41354931 & 0.4529761 & 0.57520209 \\
+                0.45271546 & 0.4529761 & 1.47924585 & 0.80620238 \\
+                0.48887734 & 0.57520209 & 0.80620238 & 3.89680154
+                \end{bmatrix}
+                \]
+        
+                \item \textbf{Classe 3:}
+                \[
+                \begin{bmatrix}
+                3.34855618 & 1.36090645 & 0.50617658 & 0.41959007 \\
+                1.36090645 & 2.53600431 & 0.4211376 & 0.37739653 \\
+                0.50617658 & 0.4211376 & 1.59672276 & 0.37515429 \\
+                0.41959007 & 0.37739653 & 0.37515429 & 1.54897683
+                \end{bmatrix}
+                \]
+            \end{itemize}
+        
+            \item \textbf{Probabilidades a priori:}
+            \[
+            \begin{bmatrix}
+            0.51228627 \\
+            0.01069369 \\
+            0.47702004
+            \end{bmatrix}
+            \]
+
+        \end{itemize}
+        \end{tcolorbox}
+
+        \begin{tcolorbox}[title=Resposta (continuação):]
+        \begin{itemize}
+
+        \item \textbf{Número de usuários alocados a cada classe:}
+        \begin{itemize}
+            \item \textbf{Classe 1:}  515 usuários
+            \item \textbf{Classe 2:}  5 usuários
+            \item \textbf{Classe 3:}  480 usuários
+            \item \textbf{Total:} 1000 usuários
+            \item \textbf{Proporção:} 51.5\% dos usuários estão na classe 1, 0.5\% na classe 2 e 48\% na classe 3.
+        \end{itemize}
+        \end{itemize}
+        
+
+    \end{tcolorbox}
     \item \textbf{O resultado da clusterização fez algum sentido? Explique e justifique a sua resposta.}
+    \begin{tcolorbox}[title=Resposta:]
+        A classe 2 tem médias maiores para os filmes de Romance, enquanto que a classe 3 tem médias maiores para os filmes de Sci-Fi. A classe 1, apesar de ter médias maiores para os filmes de Romance dentro das duas próprias médias, tem médias mais equilibradas para ambos os tipos de filme se comparada com as outras duas classes. 
+
+        Considerando o dataset original, pode-se associar a classe 1 a Balanced, classe 2 a Romance Lover e a classe 3 a Sci-Fi Love, mostrando que a clusterização fez um certo sentido.
+
+        Entretanto, observando o dataset original, temos:
+        \begin{itemize}
+            \item 419 clientes da classe Sci-Fi Lover
+            \item 379 clientes da classe Romance Lover
+            \item 202 clientes da classe Balanced
+        \end{itemize}
+
+        O que indica que a clusterização não capturou bem os tipos de cliente, o que provavelmente ocorreu pelo grande número de valores faltantes no dataset. Ainda assim, a clusterização feita fez sentido, considerando as médias dos filmes de Sci-Fi e Romance para cada classe.
+
+    \end{tcolorbox}
+    \newpage
     \item \textbf{Qual a probabilidade do i-ésimo cliente ser um cliente que gosta mais de Sci-Fi? Explique sua resposta de forma genérica e escolha um dos 1000 usuários para exemplificar.}
+    \begin{tcolorbox}[title=Resposta:]
+        Essa probabilidade é dada pela proporia responsabilidade $r_{ik}$ do cliente $i$ para a classe $k$.
+
+        Para o cliente 1, temos:
+        $$ x_1 = [6.1, 7.4, 3.3, 3.7, Sci-Fi Lover] $$
+
+        Após a clusterização, como associamos a classe Sci-Fi Lover ao cluster 3, temos que a probabilidade do cliente 1 ser um cliente que gosta mais de Sci-Fi é dada por
+
+        $$ r_{13} = 0.9994$$
+
+        O que indica que o cliente 1 tem uma probabilidade muito alta de ser um cliente que gosta mais de Sci-Fi, condizente com a ultima coluna do dataset original.
+    \end{tcolorbox}
 \end{enumerate}
 
 
