@@ -14,3 +14,108 @@ O robô perde R\$1,00 a cada movimento, mesmo que sendo para o mesmo quadrado. S
 \begin{enumerate}
     \item \textbf{Ignore a indicação dos sensores e mostre os passos necessários para calcular o valor médio do valor recebido ao atingir o quadrado do prêmio.}
 \end{enumerate}
+
+\begin{tcolorbox}[title=Resposta:]
+Como o enunciado diz para ignorar a indicação dos sensores, o problema se torna uma Cadeia de Markov comum. A modificação no quadrado [3, 4] (estado $S_{12})$ e o fato de que o quadrado [4, 4] é agora um estado absorvente, alteram a matriz de transição $P$ para a exibida na tabela \ref{tab:matriz_transicao_a_2}.
+
+Removendo-se os estados proibidos, matriz de transição $P$ é dada pode ser rearrajnajada em blocos:
+\begin{equation}
+    P = \begin{bmatrix}
+        Q & R \\
+        0 & I
+    \end{bmatrix}
+\end{equation}
+onde $Q$ é a matriz de transição dos estados não absorventes (tabela \ref{tab:matriz_transicao_Q}), $R$ é a matriz de transição dos estados absorventes (tabela \ref{tab:matriz_transicao_R}) e $I$ é a matriz identidade.
+
+O número esperado de visitas a cada estado é dado pela matriz fundamental: 
+
+\begin{equation}
+    N = (I - Q)^{-1}
+\end{equation}
+
+Seja $b$ o vetor que representa o custo ao se entrar em cada estado transitório:
+
+\begin{equation}
+    b = 
+\begin{bmatrix}
+S_2: 41 \\
+S_3: 11 \\
+S_4: 6 \\
+S_5: 31 \\
+S_7: 41 \\
+S_8: 11 \\
+S_9: 41 \\
+S_{10}: 6 \\
+S_{11}: 31 \\
+S_{12}: 31 \\
+S_{14}: 31 \\
+S_{15}: 11
+\end{bmatrix}
+\end{equation}
+
+O custo total esperado ao se atingir o estado $S_{16}$, iniciando o movimento em cada estado transitório, é dado por:
+
+\begin{equation}
+    E_c = b^TN
+\end{equation}
+
+Assim, o valor recebido ao atingir o quadrado do prêmio é:
+
+\begin{equation}
+    E_r = 100 - E_c(S_5),
+\end{equation}
+
+Onde $E_c(S_5)$ é o custo total esperado ao se atingir o estado $S_{16}$, iniciando o movimento no estado $S_5$.
+
+O procedimento foi implementado em Python e seu código é exibido no código \ref{lst:q3}.
+
+O resultado foi que o robô irá perder em média R\$ -1126.00 ao atingir o quadrado do prêmio. Ele sempre irá perder dinheiro, pois o prêmio esperado ao se atingir o quadrado [4, 4] é muito baixo, se comparado ao custo esperado ao se atingir cada estado transitório.
+
+\end{tcolorbox}
+
+\begin{table}[H]
+    \centering
+    \resizebox{0.9\textwidth}{!}{
+        \begin{tabular}{c|cccccccccccccccc}
+                     & $S_1$ & $S_2$ & $S_3$ & $S_4$ & $S_5$ & $S_6$ & $S_7$ & $S_8$ & $S_9$ & $S_{10}$ & $S_{11}$ & $S_{12}$ & $S_{13}$ & $S_{14}$ & $S_{15}$ & $S_{16}$ \\
+            \hline
+            $S_1$    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0 \\
+            $S_2$    & 0    & 0.75 & 0.25 & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0 \\
+            $S_3$    & 0    & 0.25 & 0.25 & 0.25 & 0    & 0    & 0.25 & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0 \\
+            $S_4$    & 0    & 0    & 0.25 & 0.50 & 0    & 0    & 0    & 0.25 & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0 \\
+            $S_5$    & 0    & 0    & 0    & 0    & 0.75 & 0    & 0    & 0    & 0.25 & 0    & 0    & 0    & 0    & 0    & 0    & 0 \\
+            $S_6$    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0 \\
+            $S_7$    & 0    & 0    & 0.25 & 0    & 0    & 0    & 0.25 & 0.25 & 0    & 0    & 0.25 & 0    & 0    & 0    & 0    & 0 \\
+            $S_8$    & 0    & 0    & 0    & 0.25 & 0    & 0    & 0.25 & 0.25 & 0    & 0    & 0    & 0.25 & 0    & 0    & 0    & 0 \\
+            $S_9$    & 0    & 0    & 0    & 0    & 0.25 & 0    & 0    & 0    & 0.50 & 0.25 & 0    & 0    & 0    & 0    & 0    & 0 \\
+            $S_{10}$ & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0.25 & 0.25 & 0.25 & 0    & 0    & 0.25 & 0    & 0 \\
+            $S_{11}$ & 0    & 0    & 0    & 0    & 0    & 0    & 0.25 & 0    & 0    & 0.25 & 0.25 & 0.25 & 0    & 0    & 0.25 & 0 \\
+            $S_{12}$ & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0.25 & 0    & 0    & 0.25 & 0.25 & 0    & 0    & 0    & 0.25 \\
+            $S_{13}$ & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0 \\
+            $S_{14}$ & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0.25 & 0    & 0    & 0    & 0.50 & 0.25 & 0 \\
+            $S_{15}$ & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0.25 & 0    & 0    & 0.25 & 0.25 & 0.25 \\
+            $S_{16}$ & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 0    & 1 \\
+        \end{tabular}
+    }
+    \caption{Matriz de Transição $P$}
+    \label{tab:matriz_transicao_a_2}
+\end{table}
+
+
+\begin{table}[H]
+    \centering
+    \resizebox{0.9\textwidth}{!}{
+        \begin{tabular}{c|cccccccccccc} & $S_2$ & $S_3$ & $S_4$ & $S_5$ & $S_7$ & $S_8$ & $S_9$ & $S_{10}$ & $S_{11}$ & $S_{12}$ & $S_{14}$ & $S_{15}$ \\ \hline $S_2$ & 0.75 & 0.25 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ $S_3$ & 0.25 & 0.25 & 0.25 & 0 & 0.25 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ $S_4$ & 0 & 0.25 & 0.50 & 0 & 0 & 0.25 & 0 & 0 & 0 & 0 & 0 & 0 \\ $S_5$ & 0 & 0 & 0 & 0.75 & 0 & 0 & 0.25 & 0 & 0 & 0 & 0 & 0 \\ $S_7$ & 0 & 0.25 & 0 & 0 & 0.25 & 0.25 & 0 & 0 & 0.25 & 0 & 0 & 0 \\ $S_8$ & 0 & 0 & 0.25 & 0 & 0.25 & 0.25 & 0 & 0 & 0 & 0.25 & 0 & 0 \\ $S_9$ & 0 & 0 & 0 & 0.25 & 0 & 0 & 0.50 & 0.25 & 0 & 0 & 0 & 0 \\ $S_{10}$ & 0 & 0 & 0 & 0 & 0 & 0 & 0.25 & 0.25 & 0.25 & 0 & 0.25 & 0 \\ $S_{11}$ & 0 & 0 & 0 & 0 & 0.25 & 0 & 0 & 0.25 & 0.25 & 0 & 0 & 0.25 \\ $S_{12}$ & 0 & 0 & 0 & 0 & 0 & 0.25 & 0 & 0 & 0.25 & 0.25 & 0 & 0 \\ $S_{14}$ & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0.25 & 0 & 0 & 0.50 & 0.25 \\ $S_{15}$ & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0.25 & 0 & 0.25 & 0.25 \\ \end{tabular}
+    }
+    \caption{Matriz de Transição de estados não absorventes $Q$}
+    \label{tab:matriz_transicao_Q}
+\end{table}
+
+\begin{table}[H]
+    \centering
+        \begin{tabular}{c|c} & $S_{16}$ \\ \hline $S_2$ & 0 \\ $S_3$ & 0 \\ $S_4$ & 0 \\ $S_5$ & 0 \\ $S_7$ & 0 \\ $S_8$ & 0 \\ $S_9$ & 0 \\ $S_{10}$ & 0 \\ $S_{11}$ & 0 \\ $S_{12}$ & 0.25 \\ $S_{14}$ & 0 \\ $S_{15}$ & 0.25 \\ \end{tabular}
+    \caption{Matriz de Transição dos estados absorventes $R$}
+    \label{tab:matriz_transicao_R}
+\end{table}
+
+\lstinputlisting[language=Python, caption={Cálculo do valor médio do valor recebido ao atingir o quadrado do prêmio}, label={lst:q3}]{q3.py}
