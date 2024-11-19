@@ -167,12 +167,253 @@ Seu objetivo é determinar a posição do robô, a partir dos sinais recebidos d
     
     \item \textbf{Suponha que o receptor de sinais tenha recebido a sequência}
     r r y r y r b g b r y y g b. Qual a probabilidade desta sequência ocorrer? Explique e implemente o algoritmo necessário para responder a pergunta.
-    \item \textbf{Repita o item anterior para a sequência}
-    r b y r g r b g b r y y g b. (Obviamente não precisa reimplementar o algoritmo!)
-    \item \textbf{Para a primeira sequência acima, qual o quadrado mais provável onde estará o robô na última posição (isto é, o quadrado de onde foi emitido o último sinal)? Explique e implemente o algoritmo necessário.}
-    \item \textbf{Para a segunda sequência acima, qual o quadrado mais provável onde estará o robô?}
-    \item \textbf{Para a primeira sequência acima, qual o caminho mais provável percorrido pelo robô? Explique o algoritmo usado, mas não precisa implementar. Use uma biblioteca de Python ou outra linguagem preferida.}
-\end{itemize}
+    \begin{tcolorbox}[title=Resposta:]
+        Assim como no problema 1 de \cite{Rabiner1989}, devemos utilizar a etapa forward do algoritmo forward-backward para calcular a probabilidade da sequência de observações. Esta etapa pode ser dividida em 3 passos:
 
-% Espaço para figura da questão 1
+        \begin{itemize}
+            \item Inicialização: a variavel \( \alpha_1(i) \) é calculada para cada estado \( i \) como a probabilidade de estar no estado \( i \) e emitir a observação \( O_1 \).
+            \begin{equation}
+                \alpha_1(i) = \pi_i b_i(O_1)
+            \end{equation}
+            \item Indução: a variável \( \alpha_t(i) \) é calculada para cada estado \( i \) como a probabilidade de estar no estado \( i \) e emitir a observação \( O_t \) dado que a sequência de observações até o tempo \( t-1 \) foi observada.
+            \begin{equation}
+                \alpha_t(i) = P(O_1, O_2, \ldots, O_t, q_t = S_i | \lambda) = \sum_{j=1}^{N} \alpha_{t-1}(j) a_{ji} b_i(O_t)
+            \end{equation} 
+            \item Termino: a probabilidade total da sequência de observações é dada por:
+            \begin{equation}
+                P(O |  \lambda) = \sum_{i=1}^{N} \alpha_T(i)
+            \end{equation}
+        \end{itemize}
+
+        onde \(  \lambda \) é o modelo, \( N \) é o número de estados, \( \pi_i \) é a probabilidade inicial de estar no estado \( i \), \( a_{ji} \) é a probabilidade de transição do estado \( j \) para o estado \( i
+        \) e \( b_i(O_t) \) é a probabilidade de emitir a observação \( O_t \) no estado \( i \).
+
+        Para isso, foi implementada em python a classe HMM, que recebe as matrizes \( A \) e \( B \) ao ser inicializada e contém os métodos forward para calcular a probabilidades \(\alpha\) de uma dada sequência e método P\_obs, que calcula a probabilidade total daquela observação, para um dado alpha. O código fonte da classe HMM pode ser visto no código \ref{lst:hmm}.
+    \end{tcolorbox}
+
+    \begin{lstlisting}[language=Python, caption=Classe HMM, label={lst:hmm}]
+        class HMM:
+            def __init__(self, A, B, pi):
+                """
+                Inicializa o modelo HMM.
+                
+                :param A: Matriz de transição de estados (N x N)
+                :param B: Matriz de emissão de observações (N x M)
+                :param pi: Vetor de probabilidades iniciais (1 x N)
+                """
+                self.A = A  # Matriz de transição
+                self.B = B  # Matriz de emissão
+                self.pi = pi  # Probabilidades iniciais
+
+            def forward(self, O):
+                """
+                Calcula o alpha para todos os estados e tempos para uma sequência O.
+
+                :param O: Sequência de observações (lista de índices das observações)
+                :return: Matriz alpha (T x N)
+                """
+                N = len(self.pi)  # Número de estados
+                T = len(O)  # Comprimento da sequência de observações
+
+                # Inicialização
+                alpha = np.zeros((T, N))
+                alpha[0, :] = self.pi * self.B[:, O[0]]
+
+                # Recursão
+                for t in range(1, T):
+                    for j in range(N):
+                        alpha[t, j] = np.sum(alpha[t - 1, :] * self.A[:, j]) * self.B[j, O[t]]
+
+                return alpha
+
+            def P_obs(self, alpha):
+                """
+                Calcula a probabilidade da sequência de observações, dado o modelo.
+                
+                :param alpha: Matriz alpha (T x N) calculada pelo método forward
+                :return: Probabilidade da sequência de observações
+                """
+                return np.sum(alpha[-1, :])
+    \end{lstlisting}
+
+    \begin{tcolorbox}[title=Resposta (continuação):]
+        O resultado obtido para a sequência \( r r y r y r b g b r y y g b \) foi:
+        \begin{equation}
+            P(O |  \lambda) = 4.3021 \times 10^{-10}
+        \end{equation}
+
+        A probabilidade obtida foi um valor muito pequeno, porém esse resultado é esperado. Isso ocorre pois:
+        \begin{itemize}
+            \item O robô possui muitas possibilidades de movimento;
+            \item A sequência de observações é relativamente longa;
+            \item A probabilidade de emissão de uma cor diferente da esperada para um estado é de $0.0333$ para cada cor.
+        \end{itemize}
+        
+        Juntos, esses fatores contribuem para que o resultado seja um valor muito pequeno.
+    \end{tcolorbox}
+
+    \item \textbf{Repita o item anterior para a sequência r b y r g r b g b r y y g b. (Obviamente não precisa reimplementar o algoritmo!)}
+    \begin{tcolorbox}[title=Resposta:]
+        Utilizando o mesmo código do item anterior, o resultado obtido para a sequência \( r b y r g r b g b r y y g b \) foi:
+        \begin{equation}
+            P(O |  \lambda) = 1.0925 \times 10^{-10}
+        \end{equation}
+
+        O resultado obtido foi cerca de 4 vezes menor que o obtido na sequência anterior, mostrando que essa sequencia é menos provável de ocorrer.
+    \end{tcolorbox}
+
+    \item \textbf{Para a primeira sequência acima, qual o quadrado mais provável onde estará o robô na última posição (isto é, o quadrado de onde foi emitido o último sinal)? Explique e implemente o algoritmo necessário.}
+    \begin{tcolorbox}[title=Resposta:]
+        A soluçáo para este item esta na parte inicial do problema 2 de \cite{Rabiner1989}, onde a variável $\gamma = P (q_t = S_i | O, \lambda)$ é definida como a probabilidade de estar no estado $S_i$ no tempo $t$ dado o modelo $\lambda$ e a sequência de observações $O$, sendo dada por:
+        \begin{equation}
+            \gamma_t(i) = P(q_t = S_i | O, \lambda) = \frac{\alpha_t(i) \beta_t(i)}{P(O | \lambda)} = \frac{\alpha_t(i) \beta_t(i)}{\sum_{j=1}^{N} \alpha_t(j) \beta_t(j)}
+        \end{equation}
+
+        onde $\beta_t(i)$ é a probabilidade de observar a sequência $O_{t+1}, O_{t+2}, \ldots, O_T$ dado que o sistema está no estado $S_i$ no tempo $t$, sendo calculada na etapa backward do algoritmo forward-backward:
+
+        \begin{equation}
+            \beta_t(i) = P(O_{t+1}, O_{t+2}, \ldots, O_T | q_t = S_i, \lambda) = \sum_{j=1}^{N} a_{ij} b_j(O_{t+1}) \beta_{t+1}(j)
+        \end{equation}
+
+        Para calcular o estado final mais provável, foram implementados os métodos backward e gamma, que calculam as matrizes $\beta$ e $\gamma$, respectivamente. Além disso, foi implementado o método end\_state, que recebe a matriz gamma e retorna o estado mais provável na última observação e o valor da probabilidade para aquele estado ser o último. O código fonte dos métodos backward, gamma e end\_state pode ser visto no código \ref{lst:end_state}.
+    
+    \end{tcolorbox}    
+    
+    \begin{lstlisting}[language=Python, caption={backward, gamma e end\_state}, label={lst:end_state}]
+    def backward(self, O):
+        """
+        Calcula o beta para todos os estados e tempos para uma sequência O.
+
+        :param O: Sequência de observações (lista de índices das observações)
+        :return: Matriz beta (T x N)
+        """
+        N = len(self.pi)
+        T = len(O)
+
+        # Inicialização
+        beta = np.zeros((T, N))
+        beta[-1, :] = 1
+
+        # Recursão
+        for t in range(T - 2, -1, -1):
+            for i in range(N):
+                beta[t, i] = np.sum(self.A[i, :] * self.B[:, O[t + 1]] * beta[t + 1, :])
+
+        return beta
+    
+    def gamma(self, alpha, beta):
+        """
+        Calcula a matriz gamma para todos os estados e tempos para uma sequência O.
+        
+        :param alpha: Matriz alpha (T x N) calculada pelo método forward
+        :param beta: Matriz beta (T x N) calculada pelo método backward
+        :return: Matriz gamma (T x N)
+        """
+        return alpha * beta / np.sum(alpha * beta, axis=1).reshape(-1, 1)
+
+    def end_state(self, gamma):
+            """
+            Calcula o estado mais provável na última observação.
+            
+            :param gamma: Matriz gamma (T x N) calculada pelo método gamma
+            :return: Estado mais provável na última observação
+            """
+            end_state = np.argmax(gamma[-1, :])
+            P_end_state = gamma[-1, end_state]
+            state_map = {0: 'S1', 1: 'S2', 2: 'S3', 3: 'S4', 4: 'S5', 5: 'S6', 6: 'S7', 7: 'S8', 8: 'S9', 9: 'S10', 10: 'S11', 11: 'S12', 12: 'S13', 13: 'S14', 14: 'S15', 15: 'S16'}
+            return state_map[end_state], P_end_state        
+    \end{lstlisting}
+
+    \begin{tcolorbox}[title=Resposta (continuação):]
+        Executando o código acima, o resultado obtido para a sequência \( r r y r y r b g b r y y g b \) foi que o estado mais provável na última observação é o estado \( S_{11} \) (X=3, Y=3), com probabilidade de $0.6055$.
+    \end{tcolorbox}
+
+    \item \textbf{Para a segunda sequência acima, qual o quadrado mais provável onde estará o robô?}
+    
+    \begin{tcolorbox}[title=Resposta:]
+        Executando o mesmo código do item anterior, o resultado obtido para a sequência \( r b y r g r b g b r y y g b \) foi que o estado mais provável na última observação também é o estado \( S_{11} \) (X=3, Y=3), porém com probabilidade de $0.6092$, muito próxima da probabilidade obtida na sequência anterior.
+    \end{tcolorbox}
+
+    \item \textbf{Para a primeira sequência acima, qual o caminho mais provável percorrido pelo robô? Explique o algoritmo usado, mas não precisa implementar. Use uma biblioteca de Python ou outra linguagem preferida.}
+    \begin{tcolorbox}[title=Resposta:]
+        Com base no problema 2 de \cite{Rabiner1989}, o caminho mais provável percorrido pelo robô é obtido através do algoritmo de Viterbi, que calcula a sequência de estados mais provável para uma dada sequência de observações. O algoritmo de Viterbi é é baseado no cálculo da variável \( \delta_t(i) \), que é a probabilidade da sequência mais provável de estados até o tempo \( t \) e que termina no estado \( i \), sendo dada por:
+        \begin{equation}
+            \delta_{t}(i) = max_{q_1, q_2, \ldots, q_t} [P(q_1, q_2, \ldots, q_t = S_i, O_1, O_2, \ldots, O_{t} | \lambda)]
+        \end{equation}
+
+        A cada passo também é calculada a variável \( \psi_t(i) \), que é o estado anterior mais provável para o estado \( i \) no tempo \( t \).
+
+        \begin{itemize}
+            \item Inicialização: a variável \( \delta_1(i) \) é calculada para cada estado \( i \) como a probabilidade de estar no estado \( i \) e emitir a observação \( O_1 \).
+            \begin{equation}
+                \delta_1(i) = \pi_i b_i(O_1)
+            \end{equation}
+            e
+            \begin{equation}
+                \psi_1(i) = 0
+            \end{equation}
+            \item Recursão: a variável \( \delta_t(i) \) é calculada para cada estado \( i \) como a probabilidade de estar no estado \( i \) e emitir a observação \( O_t \) dado que a sequência de observações até o tempo \( t-1 \) foi observada. A variável \( \psi_t(i) \) é calculada como o estado anterior mais provável para o estado \( i \).
+            \begin{equation}
+                \delta_t(j) = max_{1 \leq i \leq N} [\delta_{t-1}(i) a_{ij}] b_j(O_t)
+            \end{equation}
+            e
+            \begin{equation}
+                \psi_t(j) = argmax_{1 \leq i \leq N} [\delta_{t-1}(i) a_{ij}]
+            \end{equation}
+        \item Finalização: O estado final mais provável e a sua probabilide são calculados.
+        \begin{equation}
+            q_T^* = argmax_{1 \leq i \leq N} \delta_T(i)
+        \end{equation}
+        e
+        \begin{equation}
+            P^* = max_{1 \leq i \leq N} \delta_T(i)
+        \end{equation}
+        \item Retrocesso: O caminho mais provável é obtido retrocedendo a partir do estado final mais provável, utilizando os valores de \( \psi_t(i) \) calculados na etapa de recursão.
+        \begin{equation}
+            q_t^* = \psi_{t+1}(q_{t+1}^*)
+        \end{equation}
+
+        Foi implementado na classe HMM o método viterbi, que recebe a sequência de observações e retorna o caminho mais provável percorrido pelo robô. O código fonte do método viterbi pode ser visto no código \ref{lst:viterbi}.
+        \end{itemize}
+
+        \end{tcolorbox}
+
+        \begin{lstlisting}[language=Python, caption={viterbi}, label={lst:viterbi}]
+                def viterbi(self, O):
+                    # inicialização
+                    N = len(self.pi)
+                    T = len(O)
+                    delta = np.zeros((T, N))
+                    psi = np.zeros((T, N), dtype=int)
+                    delta[0, :] = self.pi * self.B[:, O[0]]
+                    psi[0, :] = 0
+
+                    # recursão
+                    for t in range(1, T):
+                        for j in range(N):
+                            delta[t, j] = np.max(delta[t - 1, :] * self.A[:, j]) * self.B[j, O[t]]
+                            psi[t, j] = np.argmax(delta[t - 1, :] * self.A[:, j])
+                    
+                    # finalização
+                    P_star = np.max(delta[-1, :])
+                    q_star = np.argmax(delta[-1, :])
+
+                    # reconstrução do caminho
+                    path = [q_star]
+                    for t in range(T - 1, 0, -1):
+                        q_star = psi[t, q_star]
+                        path.insert(0, q_star)
+
+                    state_map = {0: 'S1', 1: 'S2', 2: 'S3', 3: 'S4', 4: 'S5', 5: 'S6', 6: 'S7', 7: 'S8', 8: 'S9', 9: 'S10', 10: 'S11', 11: 'S12', 12: 'S13', 13: 'S14', 14: 'S15', 15: 'S16'}
+                    path = [state_map[state] for state in path]
+                    return path, P_star
+        \end{lstlisting}
+
+        \begin{tcolorbox}[title=Resposta (continuação):]
+            Executando o código acima, o resultado obtido para a sequência \( r r y r y r b g b r y y g b \) foi que a sequência de estados mais provável percorrida pelo robô foi: ['S5', 'S5', 'S5', 'S5', 'S5', 'S5', 'S9', 'S10', 'S11', 'S7', 'S8', 'S8', 'S7', 'S11'], com probabilidade de $8.3918 \times 10^{-11}$.
+
+            Apesar de não ter sido pedido no item, o caminho mais provével para a segunda sequência, \( r b y r g r b g b r y y g b \), foi: ['S5', 'S9', 'S5', 'S5', 'S5', 'S5', 'S9', 'S10', 'S11', 'S7', 'S8', 'S8', 'S7', 'S11'], com probabilidade de $9.3242 \times 10^{-12}$.
+        \end{tcolorbox}
+    
+\end{itemize}
 
