@@ -264,7 +264,7 @@ Seu objetivo é determinar a posição do robô, a partir dos sinais recebidos d
 
     \item \textbf{Para a primeira sequência acima, qual o quadrado mais provável onde estará o robô na última posição (isto é, o quadrado de onde foi emitido o último sinal)? Explique e implemente o algoritmo necessário.}
     \begin{tcolorbox}[title=Resposta:]
-        A soluçáo para este item esta na parte inicial do problema 2 de \cite{Rabiner1989}, onde a variável $\gamma = P (q_t = S_i | O, \lambda)$ é definida como a probabilidade de estar no estado $S_i$ no tempo $t$ dado o modelo $\lambda$ e a sequência de observações $O$, sendo dada por:
+        A solução para este item esta na parte inicial do problema 2 de \cite{Rabiner1989}, onde a variável $\gamma = P (q_t = S_i | O, \lambda)$ é definida como a probabilidade de estar no estado $S_i$ no tempo $t$ dado o modelo $\lambda$ e a sequência de observações $O$, sendo dada por:
         \begin{equation}
             \gamma_t(i) = P(q_t = S_i | O, \lambda) = \frac{\alpha_t(i) \beta_t(i)}{P(O | \lambda)} = \frac{\alpha_t(i) \beta_t(i)}{\sum_{j=1}^{N} \alpha_t(j) \beta_t(j)}
         \end{equation}
@@ -275,7 +275,9 @@ Seu objetivo é determinar a posição do robô, a partir dos sinais recebidos d
             \beta_t(i) = P(O_{t+1}, O_{t+2}, \ldots, O_T | q_t = S_i, \lambda) = \sum_{j=1}^{N} a_{ij} b_j(O_{t+1}) \beta_{t+1}(j)
         \end{equation}
 
-        Para calcular o estado final mais provável, foram implementados os métodos backward e gamma, que calculam as matrizes $\beta$ e $\gamma$, respectivamente. Além disso, foi implementado o método end\_state, que recebe a matriz gamma e retorna o estado mais provável na última observação e o valor da probabilidade para aquele estado ser o último. O código fonte dos métodos backward, gamma e end\_state pode ser visto no código \ref{lst:end_state}.
+        Para calcular o estado final mais provável, foram implementados os métodos backward e gamma, que calculam as matrizes $\beta$ e $\gamma$, respectivamente. Além disso, foi implementado o método end\_state, que recebe a matriz gamma e retorna o estado mais provável na última observação (aquele com maior $\gamma_T(i)$) e o valor da probabilidade para aquele estado ser o último. O código fonte dos métodos backward, gamma e end\_state pode ser visto no código \ref{lst:end_state}.
+
+        OBS: Como no estado final $\beta_T(i) = 1$, a probabilidade $\gamma_T(i)$ poderia ser calculada como $\frac{\alpha_T(i)}{P(O | \lambda)}$, porém optou-se por utilizar a fórmula geral para deixar o código mais genérico.
     
     \end{tcolorbox}    
     
