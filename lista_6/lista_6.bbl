@@ -5,4 +5,10 @@
 \providecommand{\abntbstabout}[1]{}
 \abntbstabout{v-1.9.7 }
 
+\bibitem{sutton2018reinforcement}
+\abntrefinfo{Sutton e Barto}{SUTTON; BARTO}{2018}
+{SUTTON, R.~S.; BARTO, A.~G. \emph{Reinforcement Learning: An Introduction}.
+  2nd. ed. Cambridge, MA: MIT Press, 2018.
+ISBN 978-0262039246.}
+
 \end{thebibliography}

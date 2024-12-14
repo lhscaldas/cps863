@@ -1,2 +1,77 @@
 \section*{Questão 1}
 
+\textit{Value Iteration}, \textit{Policy Iteration} e \textit{Q-Learning} são algoritmos utilizados para encontrar a política ótima em problemas de decisão sequencial, como um Processo de Decisão de Markov (MDP). A diferença entre eles é a forma como a política ótima é encontrada. A descrição de cada um deles abaixo e as equações seguem a notação do livro \textit{Reinforcement Learning: An Introduction} de Sutton e Barto \cite{sutton2018reinforcement}.
+
+\subsection*{Value Iteration}
+Calcula iterativamente a função de valor $V(s)$ para cada estado $s$ até convergir para a função de valor ótima $V^*(s)$. A função de valor é calculada tornando a equação de Bellman de otimalidade em uma regra de atualização iterativa:
+
+\begin{equation}
+    V_{k+1}(s) = \max_a \sum_{s', r} p(s', r | s, a) [r + \gamma V_k(s')]
+\end{equation}
+
+onde $V_k(s)$ é a função de valor no passo $k$, $p(s', r | s, a)$ é a probabilidade de transição para o estado $s'$ e recompensa $r$ dado o estado $s$ e ação $a$ e $\gamma$ é o fator de desconto, que regula a importância dada as recompensas futuras.
+
+A convergência da função de valor é dada pela condição de parada:
+
+\begin{equation}
+    \Delta = \max_s |V_{k+1}(s) - V_k(s)| < \theta
+\end{equation}
+
+onde $\theta$ é um pequeno limiar (\textit{threshold}), que determina a acurácia da convergência. Ao ser atingida esta condição, podemos considerar que a função de valor ótima $V^*(s)$ foi encontrada:
+
+\begin{equation}
+    V^*(s) \approx V_k(s)
+\end{equation}
+
+Após a convergência da função de valor, a política ótima $\pi^*(s)$ é obtida a partir da função de valor ótima:
+
+\begin{equation}
+    \pi^*(s) = \arg\max_a \sum_{s', r} p(s', r | s, a) [r + \gamma V^*(s')]
+\end{equation}
+
+onde argmax é o operador que retorna o argumento que maximiza a função.
+
+\subsection*{Policy Iteration}
+Calcula iterativamente a política ótima $\pi^*(s)$ em duas etapas: \textbf{avaliação} e \textbf{melhoria da política}. 
+
+\begin{itemize}
+    \item Na etapa de avaliação, a função de valor $V(s)$ é calculada para a política atual $\pi(s)$ a partir da equação de Bellman:
+
+    \begin{equation}
+        V_{k+1}(s) = \sum_{s', r} p(s', r | s, \pi(s)) [r + \gamma V_{k}(s')]
+    \end{equation}
+    
+    onde $V(s)$ é a função de valor para o estado $s$, $p(s', r | s, \pi(s))$ é a probabilidade de transição para o estado $s'$ e recompensa $r$ dado o estado $s$ e ação $\pi(s)$ e $\gamma$ é o fator de desconto. Esse processo é repetido até ser atingido o critério de convergência $\Delta = \max_s |V_{k+1}(s) - V_k(s)| < \theta$.
+
+    \item Na etapa de melhoria da política, feita após a avaliação da função de valor, a política é atualizada para a ação que maximiza a função de valor:
+
+    \begin{equation}
+        \pi_{k+1}(s) = \arg\max_a \sum_{s', r} p(s', r | s, a) [r + \gamma V_{k}(s')]
+    \end{equation}
+\end{itemize}
+
+O algoritmo inicializa com uma política $\pi(s)$ arbitrária e continua iterando entre a avaliação e melhoria da política até que a política não mude mais. Neste ponto, a política ótima $\pi^*(s)$ foi encontrada.
+
+\subsection*{Q-Learning}
+
+Calcula a política ótima $\pi^*(s)$ aprendendo a função de ação-valor $Q(S, A)$, que estima o retorno esperado ao tomar a ação $a$ no estado $s$, sem depender de conhecimento prévio de um modelo do ambiente (transições e recompensas). O algoritmo atualiza a função de ação-valor iterativamente a partir da equação de Bellman para a função de ação-valor:
+
+\begin{equation}
+    Q(S_t, A_t) = Q(S_t, A_t) + \alpha [R_{t+1} + \gamma \max_{a} Q(S_{t+1}, a) - Q(S_t, A_t)]
+\end{equation}
+
+onde a ação A é escolhida de acordo com uma política de exploração, $\alpha$ é a taxa de aprendizado, $R$ é a recompensa imediata, $\gamma$ é o fator de desconto e $S_{t+1}$ é o estado resultante da ação $A_t$ no estado $S_t$. 
+
+A politica de exploração é diferente da politica ótima, e é usada para explorar o ambiente e evitar a convergência prematura para uma política subótima. Isso faz com que o algoritmo \textit{Q-Learning} seja considerado um algoritmo de aprendizado por reforço \textit{off-policy}. Uma política de exploração comum é a política $\epsilon$-gulosa, que escolhe a ação que maximiza a função de ação-valor com probabilidade $1 - \epsilon$ e uma ação aleatória com probabilidade $\epsilon$.
+
+O termo $R_{t+1} + \gamma \max_{a} Q(S_{t+1}, a) - Q(S_t, A_t)$ é o erro TD (\textit{Temporal Difference}), que é usado para atualizar a função de ação-valor. Isso faz com que o algoritmo \textit{Q-Learning} seja incluído na categoria de métodos de aprendizado por reforço baseados em diferenças temporais (\textit{Temporal Difference Learning}).
+
+$Q(S, A)$ é inicializado arbitrariamente e atualizado a cada passo da simulação, até que a função de ação-valor convirja para a função de ação-valor ótima $Q^*(S, A)$. A política ótima $\pi^*(s)$ é obtida a partir da função de ação-valor ótima:
+
+\begin{equation}
+    \pi^*(s) = \arg\max_a Q^*(s, a)
+\end{equation}
+
+\subsection*{Comparação}
+
+A principal diferença entre \textit{Value Iteration} e \textit{Policy Iteration} é que o primeiro calcula a função de valor diretamente, iterando sobre ela até encontrar o valor ótimo, para então derivar a política ótima. Já o segundo calcula a função de valor para a política atual e, em seguida, atualiza a política para a ação que maximiza a função de valor. Este processo é repetido até que a política não mude mais. Já o \textit{Q-Learning} se diferencia dos outros dois por não precisar de um modelo do ambiente para calcular a política ótima. Ele aprende a política ótima interagindo com o ambiente (ou uma simulação deste), atualizando a função de ação-valor. A política ótima é obtida escolhendo a ação que maximiza o valor estimado.
