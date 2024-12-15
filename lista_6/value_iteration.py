@@ -17,6 +17,7 @@ def value_iteration(states, actions, transition_probabilities, rewards, gamma=0.
     # Inicializa os valores de todos os estados com 0
     V = {state: 0 for state in states}
 
+    delta_list = []
     while True:
         delta = 0
         for state in states:
@@ -32,9 +33,9 @@ def value_iteration(states, actions, transition_probabilities, rewards, gamma=0.
                 action_values.append(expected_value)
 
             # Atualiza o valor do estado com o máximo valor esperado
-            print(action_values)
             V[state] = max(action_values)
             delta = max(delta, abs(v - V[state]))
+            delta_list.append(delta)
 
         # Verifica convergência
         if delta < theta:
@@ -56,4 +57,4 @@ def value_iteration(states, actions, transition_probabilities, rewards, gamma=0.
                 best_action = a
         policy[state] = best_action
 
-    return policy, V
+    return policy, V, delta_list

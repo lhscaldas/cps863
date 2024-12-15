@@ -19,8 +19,8 @@ def plot_policy_and_values(states, policy, V):
     ax.set_ylim(-0.5, max_clients + 0.5)
     ax.set_xticks(range(1, max_servers + 1))
     ax.set_yticks(range(0, max_clients + 1))
-    ax.set_xlabel("Número de Servidores (S)")
-    ax.set_ylabel("Número de Clientes (C)")
+    ax.set_xlabel("Número de Servidores (s)")
+    ax.set_ylabel("Número de Clientes (c)")
     ax.grid(True)
 
     # Plota cada estado
@@ -28,13 +28,14 @@ def plot_policy_and_values(states, policy, V):
         action = policy.get((c, s), "N/A")
         value = V.get((c, s), 0)
         ax.text(
-            s, c, f"{action}\n{value:.2f}", 
+            s, c, f"A: {action}\nV: {value:.2f}", 
             ha='center', va='center',
             bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor="white")
         )
 
     plt.title("Política Ótima e Função de Valor")
     plt.gca().invert_yaxis()  # Inverte o eixo y para alinhar com a convenção (0, 0) no canto inferior
+    plt.savefig('lista_6/policy_and_values.png')
     plt.show()
 
 def debug_transition_probabilities(transition_probabilities):
@@ -73,6 +74,21 @@ def debug_rewards(rewards):
     for ((c, s), action, (new_c, new_s)), reward in rewards.items():
         print(f"Estado Atual: (C={c}, S={s}), Ação: {action}, Próximo Estado: (C'={new_c}, S'={new_s}), Recompensa: {reward}")
         print("-" * 50)
+
+# Plotar o valor de delta ao longo das iterações
+def plot_delta(delta_list):
+    """
+    Plota o valor de delta ao longo das iterações.
+
+    Parâmetros:
+        delta_list (list): Lista de valores de delta.
+    """
+    plt.plot(delta_list)
+    plt.xlabel("Iteração")
+    plt.ylabel("Delta")
+    plt.title(f"Valor de Delta ao Longo das {len(delta_list)} Iterações")
+    plt.savefig('lista_6/delta.png')
+    plt.show()
 
 
 

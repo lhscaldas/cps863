@@ -1,5 +1,6 @@
 from value_iteration import value_iteration
-from utils import plot_policy_and_values, debug_transition_probabilities, debug_rewards
+from utils import plot_policy_and_values, debug_transition_probabilities, debug_rewards, plot_delta
+import matplotlib.pyplot as plt
 
 # Configurações do problema
 states = [(c, s) for c in range(9) for s in range(1, 4)]  # Estados: (C, S), onde C ∈ [0, 8] e S ∈ [1, 3]
@@ -55,7 +56,7 @@ gamma = 0.9
 theta = 1e-6
 
 # Resolve o problema com Value Iteration
-policy, V = value_iteration(states, actions, transition_probabilities, rewards, gamma, theta)
+policy, V, delta_list = value_iteration(states, actions, transition_probabilities, rewards, gamma, theta)
 
 # Resultados
 print("Política Ótima:", policy)
@@ -63,5 +64,7 @@ print("Função de Valor Ótima:", V)
 
 # Plota resultados
 plot_policy_and_values(states, policy, V)
+plot_delta(delta_list)
+
 
 
