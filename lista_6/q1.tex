@@ -41,7 +41,7 @@ Calcula iterativamente a política ótima $\pi^*(s)$ em duas etapas: \textbf{ava
         V_{k+1}(s) = \sum_{s', r} p(s', r | s, \pi(s)) [r + \gamma V_{k}(s')]
     \end{equation}
     
-    onde $V(s)$ é a função de valor para o estado $s$, $p(s', r | s, \pi(s))$ é a probabilidade de transição para o estado $s'$ e recompensa $r$ dado o estado $s$ e ação $\pi(s)$ e $\gamma$ é o fator de desconto. Esse processo é repetido até ser atingido o critério de convergência $\Delta = \max_s |V_{k+1}(s) - V_k(s)| < \theta$.
+    onde $V(s)$ é a função de valor para o estado $s$, $p(s', r | s, \pi(s))$ é a probabilidade de transição para o estado $s'$ e recompensa $r$ dado o estado $s$ e ação $\pi(s)$ e $\gamma$ é o fator de desconto. Este processo é repetido até que se atinja o critério de convergência $\Delta = \max_s |V_{k+1}(s) - V_k(s)| < \theta$.
 
     \item Na etapa de melhoria da política, feita após a avaliação da função de valor, a política é atualizada para a ação que maximiza a função de valor:
 
@@ -74,4 +74,6 @@ $Q(S, A)$ é inicializado arbitrariamente e atualizado a cada passo da simulaç�
 
 \subsection*{Comparação}
 
-A principal diferença entre \textit{Value Iteration} e \textit{Policy Iteration} é que o primeiro calcula a função de valor diretamente, iterando sobre ela até encontrar o valor ótimo, para então derivar a política ótima. Já o segundo calcula a função de valor para a política atual e, em seguida, atualiza a política para a ação que maximiza a função de valor. Este processo é repetido até que a política não mude mais. Já o \textit{Q-Learning} se diferencia dos outros dois por não precisar de um modelo do ambiente para calcular a política ótima. Ele aprende a política ótima interagindo com o ambiente (ou uma simulação deste), atualizando a função de ação-valor. A política ótima é obtida escolhendo a ação que maximiza o valor estimado.
+A principal diferença entre \textit{Value Iteration} e \textit{Policy Iteration} é que o primeiro calcula a função de valor diretamente, iterando sobre ela até encontrar o valor ótimo, para então derivar a política ótima. Já o segundo calcula a função de valor para a política atual e, em seguida, atualiza a política para a ação que maximiza a função de valor. Este processo é repetido até que a política não mude mais. Ambos métodos assumem o conhecimento prévio de um modelo do ambiente (transições e recompensas).
+
+Por outro lado, o \textit{Q-Learning} não precisa de um modelo do ambiente para calcular a política ótima. Ele aprende interagindo com o ambiente (ou uma simulação), atualizando a função de ação-valor iterativamente. Além disso, o \textit{Q-Learning} é um algoritmo \textit{off-policy}, utilizando uma política de exploração (como $\epsilon$-gulosa) para explorar o ambiente enquanto converge para a política ótima, que é obtida escolhendo a ação que maximiza o valor estimado.
