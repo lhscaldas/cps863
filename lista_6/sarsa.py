@@ -1,8 +1,8 @@
 import random
 
-def q_learning(states, actions, simulator, alpha=0.1, gamma=0.9, epsilon=0.1, episodes=1000, max_steps=100):
+def sarsa(states, actions, simulator, alpha=0.1, gamma=0.9, epsilon=0.1, episodes=1000, max_steps=100):
     """
-    Resolve o problema de decisão usando o algoritmo Q-Learning.
+    Resolve o problema de decisão usando o algoritmo SARSA.
 
     Parâmetros:
         states (list): Lista de estados no formato [(c, s)].
@@ -30,22 +30,28 @@ def q_learning(states, actions, simulator, alpha=0.1, gamma=0.9, epsilon=0.1, ep
         steps = 0
         delta = 0
 
-        while steps < max_steps:
-            # Escolhe a ação usando a política epsilon-greedy
-            if random.uniform(0, 1) < epsilon:
-                action = random.choice(actions)  # Exploration
-            else:
-                action = max(Q[state], key=Q[state].get)  # Exploitation
+        # Escolhe a primeira ação usando epsilon-greedy
+        if random.uniform(0, 1) < epsilon:
+            action = random.choice(actions)  # Exploração
+        else:
+            action = max(Q[state], key=Q[state].get)  # Exploitação
 
+        while steps < max_steps:
             # Simula o ambiente para obter o próximo estado e a recompensa
             next_state, reward = simulator.simulate(state, action)
 
-            # Atualiza a função Q usando a equação de aprendizado por diferença temporal (TD)
-            max_next_q = max(Q[next_state].values()) if next_state in Q else 0
-            Q[state][action] += alpha * (reward + gamma * max_next_q - Q[state][action])
+            # Escolhe a próxima ação usando epsilon-greedy
+            if random.uniform(0, 1) < epsilon:
+                next_action = random.choice(actions)  # Exploração
+            else:
+                next_action = max(Q[next_state], key=Q[next_state].get)  # Exploitação
 
-            # Atualiza o estado atual
+            # Atualiza a função Q usando a equação de aprendizado SARSA
+            Q[state][action] += alpha * (reward + gamma * Q[next_state][next_action] - Q[state][action])
+
+            # Atualiza o estado e a ação atuais
             state = next_state
+            action = next_action
 
             # Incrementa o contador de passos
             steps += 1

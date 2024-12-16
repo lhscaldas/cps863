@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import random
 
 def plot_policy_and_values(states, policy, V):
     """
@@ -89,6 +90,49 @@ def plot_delta(delta_list):
     plt.title(f"Valor de Delta ao Longo das {len(delta_list)} Iterações")
     plt.savefig('lista_6/delta.png')
     plt.show()
+
+
+class EnvironmentSimulator:
+    """
+    Classe para simular o ambiente com base nas probabilidades de transição e recompensas.
+    """
+    def __init__(self, transition_probabilities, rewards):
+        """
+        Inicializa o simulador com probabilidades de transição e recompensas.
+
+        Parâmetros:
+            transition_probabilities (dict): Probabilidades de transição no formato {((c, s), a, (new_c, new_s)): prob}.
+            rewards (dict): Recompensas no formato {((c, s), a, (new_c, new_s)): reward}.
+        """
+        self.transition_probabilities = transition_probabilities
+        self.rewards = rewards
+
+    def simulate(self, state, action):
+        """
+        Simula o ambiente retornando o próximo estado e a recompensa.
+
+        Parâmetros:
+            state (tuple): Estado atual no formato (c, s).
+            action (int): Ação a ser tomada.
+
+        Retorna:
+            next_state (tuple): Próximo estado no formato (new_c, new_s).
+            reward (float): Recompensa para a transição.
+        """
+        possible_transitions = [
+            (next_state, prob) for ((current_state, a, next_state), prob) in self.transition_probabilities.items()
+            if current_state == state and a == action
+        ]
+
+        if not possible_transitions:
+            return state, 0  # Retorna o estado atual e recompensa zero se não houver transição
+
+        next_states, probabilities = zip(*possible_transitions)
+        next_state = random.choices(next_states, probabilities)[0]
+
+        reward = self.rewards.get((state, action, next_state), 0)
+
+        return next_state, reward
 
 
 

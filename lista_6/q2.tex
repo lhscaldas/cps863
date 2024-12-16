@@ -128,7 +128,7 @@ Foi utilizado um fator de desconto $\gamma = 0.9$ e um limiar de convergência $
 
 \subsection*{Q-Learning}
 
-Foi implementado em Python um algoritmo de \textit{Q-Learning} para resolver o problema da cadeia de Markov descrita. O código fonte está disponível no repositório indicado no final deste relatório, na pasta \texttt{lista\_6}, arquivo \texttt{q\_learning.py}. O código principal, onde são definidas as probabilidades de transição e as recompensas, está disponível no arquivo \texttt{main.py}. Como o problema em questão não possui estado terminal, o algoritmo foi adaptado para, a cada epsódio, limitar o número de passos. Além disso, foi implementada uma classe \texttt{EnvironmentSimulator} para simular o ambiente, recebendo como entrada o estado atual e a ação tomada e retornando o próximo estado e a recompensa obtida. O código segue o seguinte fluxo:
+Foi implementado em Python um algoritmo de \textit{Q-Learning} para resolver o problema da cadeia de Markov descrita. O código fonte está disponível no repositório indicado no final deste relatório, na pasta \texttt{lista\_6}, arquivo \texttt{q\_learning.py}. O código principal, onde são definidas as probabilidades de transição e as recompensas, está disponível no arquivo \texttt{main.py}. Como o problema em questão não possui estado terminal, o algoritmo foi adaptado para, a cada epsódio, limitar o número de passos. Além disso, foi implementada uma classe \texttt{EnvironmentSimulator} para simular o ambiente, recebendo como entrada o estado atual e a ação tomada e retornando o próximo estado e a recompensa obtida. A classe \texttt{EnvironmentSimulator} encontra-se no arquivo \texttt{utils.py}. O código do lgoritmo de \textit{Q-Learning} segue o seguinte fluxo:
 
 \begin{enumerate}
     \item Inicializa \( Q(s, a) \) com zeros para todos os estados e ações.
@@ -181,7 +181,7 @@ Foram utilizados os seguintes hiperparâmetros: fator de desconto \( \gamma = 0.
     \label{fig:q_learning_delta}
 \end{figure}
 
-OBS: devido a aleatoriedade do algoritmo, e a falta de um estado terminal, não é possível observar uma convergência clara na figura \ref{fig:q_learning_delta}, como nos métodos anteriores. Entretanto é poss~ivel observar que os valores de \( V^* (s) \) para cada estado na figura \ref{fig:q_learning_policy_and_values} são próximos dos valores obtidos pelos métodos anteriores e as ações da política ótima também são semelhantes. Foram feitas várias execuções do algoritmo alterando os hiperparâmetros, e nenuma delas fez ele convergir.
+OBS: devido a aleatoriedade do algoritmo, e a falta de um estado terminal, não é possível observar uma convergência clara na figura \ref{fig:q_learning_delta}, como nos métodos anteriores. Entretanto é possível observar que os valores de \( V^* (s) \) para cada estado na figura \ref{fig:q_learning_policy_and_values} são próximos dos valores obtidos pelos métodos anteriores e as ações da política ótima também são semelhantes. Foram feitas várias execuções do algoritmo alterando os hiperparâmetros, e nenuma delas fez ele convergir.
 
 \subsection*{Comparação dos Métodos}
 

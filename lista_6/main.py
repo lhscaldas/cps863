@@ -1,7 +1,8 @@
-from utils import debug_transition_probabilities, debug_rewards, plot_policy_and_values, plot_delta
+from utils import debug_transition_probabilities, debug_rewards, plot_policy_and_values, plot_delta, EnvironmentSimulator
 from value_iteration import value_iteration
 from policy_iteration import policy_iteration
-from q_learning import q_learning, EnvironmentSimulator
+from sarsa import sarsa
+from q_learning import q_learning
 
 # Configurações do problema
 states = [(c, s) for c in range(9) for s in range(1, 4)]  # Estados: (C, S), onde C ∈ [0, 8] e S ∈ [1, 3]
@@ -61,6 +62,10 @@ policy, V, delta_list = value_iteration(states, actions, transition_probabilitie
 
 # # Resolve o problema com Policy Iteration
 # policy, V, delta_list = policy_iteration(states, actions, transition_probabilities, rewards, gamma, theta)
+
+# Resolve o problema com SARSA
+simulator = EnvironmentSimulator(transition_probabilities, rewards)
+policy, V, delta_list = sarsa(states, actions, simulator, gamma=gamma, epsilon=0.1, episodes=1000, max_steps=100)
 
 # Resolve o problema com Q-Learning
 # simulator = EnvironmentSimulator(transition_probabilities, rewards)
