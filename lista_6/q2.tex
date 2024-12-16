@@ -137,7 +137,7 @@ Foi implementado em Python um algoritmo de \textit{Q-Learning} para resolver o p
         \item Escolhe um estado inicial aleatório.
         \item Para cada passo no episódio:
         \begin{enumerate}
-            \item Escolhe uma ação:
+            \item Escolhe uma ação (usando política \( \epsilon \)-gulosa):
             \begin{itemize}
                 \item Com probabilidade \( \epsilon \), escolhe uma ação aleatória (\textit{exploration}).
                 \item Caso contrário, escolhe a ação que maximiza \( Q(s, a) \) (\textit{exploitation}).
