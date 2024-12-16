@@ -1,6 +1,7 @@
+from utils import debug_transition_probabilities, debug_rewards, plot_policy_and_values, plot_delta
 from value_iteration import value_iteration
-from utils import plot_policy_and_values, debug_transition_probabilities, debug_rewards, plot_delta
-import matplotlib.pyplot as plt
+from policy_iteration import policy_iteration
+from q_learning import q_learning, EnvironmentSimulator
 
 # Configurações do problema
 states = [(c, s) for c in range(9) for s in range(1, 4)]  # Estados: (C, S), onde C ∈ [0, 8] e S ∈ [1, 3]
@@ -56,7 +57,14 @@ gamma = 0.9
 theta = 1e-6
 
 # Resolve o problema com Value Iteration
-policy, V, delta_list = value_iteration(states, actions, transition_probabilities, rewards, gamma, theta)
+# policy, V, delta_list = value_iteration(states, actions, transition_probabilities, rewards, gamma, theta)
+
+# # Resolve o problema com Policy Iteration
+# policy, V, delta_list = policy_iteration(states, actions, transition_probabilities, rewards, gamma, theta)
+
+# Resolve o problema com Q-Learning
+simulator = EnvironmentSimulator(transition_probabilities, rewards)
+policy, V, delta_list = q_learning(states, actions, simulator, gamma=gamma, epsilon=0.1, episodes=1000, max_steps=100)
 
 # Resultados
 print("Política Ótima:", policy)
