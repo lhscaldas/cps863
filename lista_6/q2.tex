@@ -181,7 +181,7 @@ Foram utilizados os seguintes hiperparâmetros: fator de desconto \( \gamma = 0.
     \label{fig:q_learning_delta}
 \end{figure}
 
-OBS: devido a aleatoriedade do algoritmo, e a falta de um estado terminal, não é possível observar uma convergência clara na figura \ref{fig:q_learning_delta}, como nos métodos anteriores. Entretanto é poss~ivel observar que os valores de \( V^* (s) \) para cada estado na figura \ref{fig:q_learning_policy_and_values} são próximos dos valores obtidos pelos métodos anteriores e as ações da política ótima também são semelhantes.
+OBS: devido a aleatoriedade do algoritmo, e a falta de um estado terminal, não é possível observar uma convergência clara na figura \ref{fig:q_learning_delta}, como nos métodos anteriores. Entretanto é poss~ivel observar que os valores de \( V^* (s) \) para cada estado na figura \ref{fig:q_learning_policy_and_values} são próximos dos valores obtidos pelos métodos anteriores e as ações da política ótima também são semelhantes. Foram feitas várias execuções do algoritmo alterando os hiperparâmetros, e nenuma delas fez ele convergir.
 
 \subsection*{Comparação dos Métodos}
 
@@ -208,5 +208,9 @@ Abaixo vemos as figuras \ref{fig:value_iteration_policy_and_values}, \ref{fig:po
     \caption{Comparação das políticas e funções de valor ótimas calculadas pelos métodos.}
     \label{fig:comparison}
 \end{figure}
+
+O métodos \textit{Value Iteration} e \textit{Policy Iteration} apresentaram resultados identicos, com mesma política ótima e função de valor ótima. O método \textit{Q-Learning} apresentou resultados semelhantes, com valores de \( V^* (s) \) próximos e ações semelhantes a da política ótima. Entretanto, o método \textit{Q-Learning} não convergiu, possivelmente devido a aleatoriedade do algoritmo e a falta de um estado terminal.
+
+O método \textit{Value Iteration} foi o mais rápido, convergindo em 2457 iterações. O método \textit{Policy Iteration} foi o segundo mais rápido, convergindo em 4 iterações do laço externo \textit{while principal}, porém foram contabiizadas um total de 5292 iterações internas da etapa de avaliação da política. O método \textit{Q-Learning}, por não ter um critério de convergência, executando sempre o mesmo número de passos vezes o número de episódios, foi o mais lento, com 100 mil iterações.
 
 
