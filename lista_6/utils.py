@@ -19,8 +19,8 @@ def plot_policy_and_values(states, policy, V):
     ax.set_ylim(-0.5, max_clients + 0.5)
     ax.set_xticks(range(1, max_servers + 1))
     ax.set_yticks(range(0, max_clients + 1))
-    ax.set_xlabel("Número de Servidores (s)")
-    ax.set_ylabel("Número de Clientes (c)")
+    ax.set_xlabel("Número de Servidores (S)")
+    ax.set_ylabel("Número de Clientes (C)")
     ax.grid(True)
 
     # Plota cada estado
